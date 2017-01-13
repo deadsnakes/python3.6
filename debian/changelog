@@ -1,5 +1,6 @@
-python3.6 (3.6.0-1+xenial1) UNRELEASED; urgency=medium
+python3.6 (3.6.0-1+xenial1) xenial; urgency=medium
 
+  [ Anthony Sottile ]
   * Removed apport support.
   * Fix test_platform by adjusting debian patch.
   * Add proper Tk and gdbm support.
@@ -8,7 +9,7 @@ python3.6 (3.6.0-1+xenial1) UNRELEASED; urgency=medium
   * Use bundled wheels for ensurepip.
   * Bump version for deadsnakes xenial
 
- -- Anthony Sottile <asottile@umich.edu>  Sat, 07 Jan 2017 20:08:23 -0800
+ -- Felix Krull <f_krull@gmx.de>  Fri, 13 Jan 2017 20:56:47 +0000
 
 python3.6 (3.6.0-1) experimental; urgency=medium
 
