@@ -1094,7 +1094,7 @@ endif
 	: # Move the docs into $(p_base)'s /usr/share/doc/$(PVER) directory,
 	: # all other packages only have a copyright file.
 	dh_installdocs -p$(p_base) \
-		README Misc/NEWS Misc/ACKS
+		README.rst Misc/NEWS Misc/ACKS
 	ln -sf NEWS.gz $(d_base)/usr/share/doc/$(p_base)/changelog.gz
 	dh_installdocs --all -N$(p_base) -N$(p_dev) -N$(p_dbg) -N$(p_lib) debian/README.Debian
 
