@@ -532,8 +532,9 @@ class PyBuildExt(build_ext):
                     for directory in reversed(options.dirs):
                         add_dir_to_list(dir_list, directory)
 
-        if os.path.normpath(sys.base_prefix) != '/usr' \
-                and not sysconfig.get_config_var('PYTHONFRAMEWORK'):
+        if (not cross_compiling and
+                os.path.normpath(sys.base_prefix) != '/usr' and
+                not sysconfig.get_config_var('PYTHONFRAMEWORK')):
             # OSX note: Don't add LIBDIR and INCLUDEDIR to building a framework
             # (PYTHONFRAMEWORK is set) to avoid # linking problems when
             # building a framework with different architectures than
@@ -1349,7 +1350,8 @@ class PyBuildExt(build_ext):
         panel_library = 'panel'
         if curses_library == 'ncursesw':
             curses_defines.append(('HAVE_NCURSESW', '1'))
-            curses_includes.append('/usr/include/ncursesw')
+            if not cross_compiling:
+                curses_includes.append('/usr/include/ncursesw')
             # Bug 1464056: If _curses.so links with ncursesw,
             # _curses_panel.so must link with panelw.
             panel_library = 'panelw'
@@ -1630,7 +1632,7 @@ class PyBuildExt(build_ext):
 ##         ext = Extension('xx', ['xxmodule.c'])
 ##         self.extensions.append(ext)
 
-        if 'd' not in sys.abiflags:
+        if 'd' not in sysconfig.get_config_var('ABIFLAGS'):
             ext = Extension('xxlimited', ['xxlimited.c'],
                             define_macros=[('Py_LIMITED_API', '0x03050000')])
             self.extensions.append(ext)
@@ -2062,7 +2064,7 @@ class PyBuildExt(build_ext):
                                                          'Modules',
                                                          '_decimal',
                                                          'libmpdec'))]
-            libraries = []
+            libraries = self.detect_math_libs()
             sources = [
               '_decimal/_decimal.c',
               '_decimal/libmpdec/basearith.c',

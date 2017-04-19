@@ -545,7 +545,7 @@ _PyCode_ConstantKey(PyObject *op)
             PyTuple_SET_ITEM(tuple, i, item_key);
         }
 
-        key = PyTuple_Pack(3, Py_TYPE(op), op, tuple);
+        key = PyTuple_Pack(2, tuple, op);
         Py_DECREF(tuple);
     }
     else if (PyFrozenSet_CheckExact(op)) {
@@ -579,7 +579,7 @@ _PyCode_ConstantKey(PyObject *op)
         if (set == NULL)
             return NULL;
 
-        key = PyTuple_Pack(3, Py_TYPE(op), op, set);
+        key = PyTuple_Pack(2, set, op);
         Py_DECREF(set);
         return key;
     }
@@ -590,7 +590,7 @@ _PyCode_ConstantKey(PyObject *op)
         if (obj_id == NULL)
             return NULL;
 
-        key = PyTuple_Pack(3, Py_TYPE(op), op, obj_id);
+        key = PyTuple_Pack(2, obj_id, op);
         Py_DECREF(obj_id);
     }
     return key;
@@ -856,16 +856,15 @@ _PyCode_SetExtra(PyObject *code, Py_ssize_t index, void *extra)
     _PyCodeObjectExtra *co_extra = (_PyCodeObjectExtra *) o->co_extra;
 
     if (co_extra == NULL) {
-        o->co_extra = (_PyCodeObjectExtra*) PyMem_Malloc(
-            sizeof(_PyCodeObjectExtra));
-        if (o->co_extra == NULL) {
+        co_extra = PyMem_Malloc(sizeof(_PyCodeObjectExtra));
+        if (co_extra == NULL) {
             return -1;
         }
-        co_extra = (_PyCodeObjectExtra *) o->co_extra;
 
         co_extra->ce_extras = PyMem_Malloc(
             tstate->co_extra_user_count * sizeof(void*));
         if (co_extra->ce_extras == NULL) {
+            PyMem_Free(co_extra);
             return -1;
         }
 
@@ -874,20 +873,25 @@ _PyCode_SetExtra(PyObject *code, Py_ssize_t index, void *extra)
         for (Py_ssize_t i = 0; i < co_extra->ce_size; i++) {
             co_extra->ce_extras[i] = NULL;
         }
+
+        o->co_extra = co_extra;
     }
     else if (co_extra->ce_size <= index) {
-        co_extra->ce_extras = PyMem_Realloc(
+        void** ce_extras = PyMem_Realloc(
             co_extra->ce_extras, tstate->co_extra_user_count * sizeof(void*));
 
-        if (co_extra->ce_extras == NULL) {
+        if (ce_extras == NULL) {
             return -1;
         }
 
-        co_extra->ce_size = tstate->co_extra_user_count;
-
-        for (Py_ssize_t i = co_extra->ce_size; i < co_extra->ce_size; i++) {
-            co_extra->ce_extras[i] = NULL;
+        for (Py_ssize_t i = co_extra->ce_size;
+             i < tstate->co_extra_user_count;
+             i++) {
+            ce_extras[i] = NULL;
         }
+
+        co_extra->ce_extras = ce_extras;
+        co_extra->ce_size = tstate->co_extra_user_count;
     }
 
     co_extra->ce_extras[index] = extra;

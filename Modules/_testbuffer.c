@@ -13,7 +13,7 @@ PyObject *Struct = NULL;
 PyObject *calcsize = NULL;
 
 /* cache simple format string */
-static const char simple_fmt[] = "B";
+static const char *simple_fmt = "B";
 PyObject *simple_format = NULL;
 #define SIMPLE_FORMAT(fmt) (fmt == NULL || strcmp(fmt, "B") == 0)
 #define FIX_FORMAT(fmt) (fmt == NULL ? "B" : fmt)
@@ -850,6 +850,7 @@ seq_as_ssize_array(PyObject *seq, Py_ssize_t len, int is_shape)
     Py_ssize_t *dest;
     Py_ssize_t x, i;
 
+    /* ndim = len <= ND_MAX_NDIM, so PyMem_New() is actually not needed. */
     dest = PyMem_New(Py_ssize_t, len);
     if (dest == NULL) {
         PyErr_NoMemory();

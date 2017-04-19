@@ -388,7 +388,7 @@ dk_set_index(PyDictKeysObject *keys, Py_ssize_t i, Py_ssize_t ix)
  * This can be used to reserve enough size to insert n entries without
  * resizing.
  */
-#define ESTIMATE_SIZE(n)  (((n)*3) >> 1)
+#define ESTIMATE_SIZE(n)  (((n)*3+1) >> 1)
 
 /* Alternative fraction that is otherwise close enough to 2n/3 to make
  * little difference. 8 * 2/3 == 8 * 5/8 == 5. 16 * 2/3 == 16 * 5/8 == 10.
@@ -676,7 +676,8 @@ Christian Tismer.
 lookdict() is general-purpose, and may return DKIX_ERROR if (and only if) a
 comparison raises an exception.
 lookdict_unicode() below is specialized to string keys, comparison of which can
-never raise an exception; that function can never return DKIX_ERROR.
+never raise an exception; that function can never return DKIX_ERROR when key
+is string.  Otherwise, it falls back to lookdict().
 lookdict_unicode_nodummy is further specialized for string keys that cannot be
 the <dummy> value.
 For both, when the key isn't found a DKIX_EMPTY is returned. hashpos returns
@@ -1359,12 +1360,26 @@ make_keys_shared(PyObject *op)
 PyObject *
 _PyDict_NewPresized(Py_ssize_t minused)
 {
+    const Py_ssize_t max_presize = 128 * 1024;
     Py_ssize_t newsize;
     PyDictKeysObject *new_keys;
-    for (newsize = PyDict_MINSIZE;
-         newsize <= minused && newsize > 0;
-         newsize <<= 1)
-        ;
+
+    /* There are no strict guarantee that returned dict can contain minused
+     * items without resize.  So we create medium size dict instead of very
+     * large dict or MemoryError.
+     */
+    if (minused > USABLE_FRACTION(max_presize)) {
+        newsize = max_presize;
+    }
+    else {
+        Py_ssize_t minsize = ESTIMATE_SIZE(minused);
+        newsize = PyDict_MINSIZE;
+        while (newsize < minsize) {
+            newsize <<= 1;
+        }
+    }
+    assert(IS_POWER_OF_2(newsize));
+
     new_keys = new_keys_object(newsize);
     if (new_keys == NULL)
         return NULL;
@@ -1577,11 +1592,34 @@ _PyDict_SetItem_KnownHash(PyObject *op, PyObject *key, PyObject *value,
     return insertdict(mp, key, hash, value);
 }
 
+static int
+delitem_common(PyDictObject *mp, Py_ssize_t hashpos, Py_ssize_t ix,
+               PyObject **value_addr)
+{
+    PyObject *old_key, *old_value;
+    PyDictKeyEntry *ep;
+
+    old_value = *value_addr;
+    assert(old_value != NULL);
+    *value_addr = NULL;
+    mp->ma_used--;
+    mp->ma_version_tag = DICT_NEXT_VERSION();
+    ep = &DK_ENTRIES(mp->ma_keys)[ix];
+    dk_set_index(mp->ma_keys, hashpos, DKIX_DUMMY);
+    ENSURE_ALLOWS_DELETIONS(mp);
+    old_key = ep->me_key;
+    ep->me_key = NULL;
+    Py_DECREF(old_key);
+    Py_DECREF(old_value);
+
+    assert(_PyDict_CheckConsistency(mp));
+    return 0;
+}
+
 int
 PyDict_DelItem(PyObject *op, PyObject *key)
 {
     Py_hash_t hash;
-
     assert(key);
     if (!PyUnicode_CheckExact(key) ||
         (hash = ((PyASCIIObject *) key)->hash) == -1) {
@@ -1598,8 +1636,6 @@ _PyDict_DelItem_KnownHash(PyObject *op, PyObject *key, Py_hash_t hash)
 {
     Py_ssize_t hashpos, ix;
     PyDictObject *mp;
-    PyDictKeyEntry *ep;
-    PyObject *old_key, *old_value;
     PyObject **value_addr;
 
     if (!PyDict_Check(op)) {
@@ -1626,23 +1662,59 @@ _PyDict_DelItem_KnownHash(PyObject *op, PyObject *key, Py_hash_t hash)
         ix = (mp->ma_keys->dk_lookup)(mp, key, hash, &value_addr, &hashpos);
         assert(ix >= 0);
     }
-
-    old_value = *value_addr;
-    assert(old_value != NULL);
-    *value_addr = NULL;
-    mp->ma_used--;
-    mp->ma_version_tag = DICT_NEXT_VERSION();
-    ep = &DK_ENTRIES(mp->ma_keys)[ix];
-    dk_set_index(mp->ma_keys, hashpos, DKIX_DUMMY);
-    ENSURE_ALLOWS_DELETIONS(mp);
-    old_key = ep->me_key;
-    ep->me_key = NULL;
-    Py_DECREF(old_key);
-    Py_DECREF(old_value);
-
-    assert(_PyDict_CheckConsistency(mp));
-    return 0;
+    return delitem_common(mp, hashpos, ix, value_addr);
 }
+
+/* This function promises that the predicate -> deletion sequence is atomic
+ * (i.e. protected by the GIL), assuming the predicate itself doesn't
+ * release the GIL.
+ */
+int
+_PyDict_DelItemIf(PyObject *op, PyObject *key,
+                  int (*predicate)(PyObject *value))
+{
+    Py_ssize_t hashpos, ix;
+    PyDictObject *mp;
+    Py_hash_t hash;
+    PyObject **value_addr;
+    int res;
+
+    if (!PyDict_Check(op)) {
+        PyErr_BadInternalCall();
+        return -1;
+    }
+    assert(key);
+    hash = PyObject_Hash(key);
+    if (hash == -1)
+        return -1;
+    mp = (PyDictObject *)op;
+    ix = (mp->ma_keys->dk_lookup)(mp, key, hash, &value_addr, &hashpos);
+    if (ix == DKIX_ERROR)
+        return -1;
+    if (ix == DKIX_EMPTY || *value_addr == NULL) {
+        _PyErr_SetKeyError(key);
+        return -1;
+    }
+    assert(dk_get_index(mp->ma_keys, hashpos) == ix);
+
+    // Split table doesn't allow deletion.  Combine it.
+    if (_PyDict_HasSplitTable(mp)) {
+        if (dictresize(mp, DK_SIZE(mp->ma_keys))) {
+            return -1;
+        }
+        ix = (mp->ma_keys->dk_lookup)(mp, key, hash, &value_addr, &hashpos);
+        assert(ix >= 0);
+    }
+
+    res = predicate(*value_addr);
+    if (res == -1)
+        return -1;
+    if (res > 0)
+        return delitem_common(mp, hashpos, ix, value_addr);
+    else
+        return 0;
+}
+
 
 void
 PyDict_Clear(PyObject *op)
@@ -1758,9 +1830,8 @@ PyDict_Next(PyObject *op, Py_ssize_t *ppos, PyObject **pkey, PyObject **pvalue)
 
 /* Internal version of dict.pop(). */
 PyObject *
-_PyDict_Pop(PyObject *dict, PyObject *key, PyObject *deflt)
+_PyDict_Pop_KnownHash(PyObject *dict, PyObject *key, Py_hash_t hash, PyObject *deflt)
 {
-    Py_hash_t hash;
     Py_ssize_t ix, hashpos;
     PyObject *old_value, *old_key;
     PyDictKeyEntry *ep;
@@ -1777,12 +1848,6 @@ _PyDict_Pop(PyObject *dict, PyObject *key, PyObject *deflt)
         }
         _PyErr_SetKeyError(key);
         return NULL;
-    }
-    if (!PyUnicode_CheckExact(key) ||
-        (hash = ((PyASCIIObject *) key)->hash) == -1) {
-        hash = PyObject_Hash(key);
-        if (hash == -1)
-            return NULL;
     }
     ix = (mp->ma_keys->dk_lookup)(mp, key, hash, &value_addr, &hashpos);
     if (ix == DKIX_ERROR)
@@ -1819,6 +1884,28 @@ _PyDict_Pop(PyObject *dict, PyObject *key, PyObject *deflt)
 
     assert(_PyDict_CheckConsistency(mp));
     return old_value;
+}
+
+PyObject *
+_PyDict_Pop(PyObject *dict, PyObject *key, PyObject *deflt)
+{
+    Py_hash_t hash;
+
+    if (((PyDictObject *)dict)->ma_used == 0) {
+        if (deflt) {
+            Py_INCREF(deflt);
+            return deflt;
+        }
+        _PyErr_SetKeyError(key);
+        return NULL;
+    }
+    if (!PyUnicode_CheckExact(key) ||
+        (hash = ((PyASCIIObject *) key)->hash) == -1) {
+        hash = PyObject_Hash(key);
+        if (hash == -1)
+            return NULL;
+    }
+    return _PyDict_Pop_KnownHash(dict, key, hash, deflt);
 }
 
 /* Internal version of dict.from_keys().  It is subclass-friendly. */
@@ -4290,15 +4377,19 @@ _PyObjectDict_SetItem(PyTypeObject *tp, PyObject **dictptr,
         }
         if (value == NULL) {
             res = PyDict_DelItem(dict, key);
-            if (cached != ((PyDictObject *)dict)->ma_keys) {
+            // Since key sharing dict doesn't allow deletion, PyDict_DelItem()
+            // always converts dict to combined form.
+            if ((cached = CACHED_KEYS(tp)) != NULL) {
                 CACHED_KEYS(tp) = NULL;
                 DK_DECREF(cached);
             }
         }
         else {
-            int was_shared = cached == ((PyDictObject *)dict)->ma_keys;
+            int was_shared = (cached == ((PyDictObject *)dict)->ma_keys);
             res = PyDict_SetItem(dict, key, value);
-            if (was_shared && cached != ((PyDictObject *)dict)->ma_keys) {
+            if (was_shared &&
+                    (cached = CACHED_KEYS(tp)) != NULL &&
+                    cached != ((PyDictObject *)dict)->ma_keys) {
                 /* PyDict_SetItem() may call dictresize and convert split table
                  * into combined table.  In such case, convert it to split
                  * table again and update type's shared key only when this is

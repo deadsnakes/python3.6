@@ -1,7 +1,14 @@
-# DP: Disable some failing tests we are not interested in
+From: Matthias Klose <doko@debian.org>
+Date: Wed, 19 Apr 2017 12:25:36 -0700
+Subject: disable-some-tests
 
-Index: b/Lib/distutils/tests/test_build_ext.py
-===================================================================
+# DP: Disable some failing tests we are not interested in
+---
+ Lib/distutils/tests/test_build_ext.py | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Lib/distutils/tests/test_build_ext.py b/Lib/distutils/tests/test_build_ext.py
+index be7f5f3..f4216ac 100644
 --- a/Lib/distutils/tests/test_build_ext.py
 +++ b/Lib/distutils/tests/test_build_ext.py
 @@ -95,6 +95,7 @@ class BuildExtTestCase(TempdirManager,

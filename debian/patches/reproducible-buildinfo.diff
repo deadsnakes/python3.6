@@ -1,13 +1,20 @@
-# DP: Build getbuildinfo.o with DATE/TIME values when defined
+From: Matthias Klose <doko@debian.org>
+Date: Wed, 19 Apr 2017 12:25:36 -0700
+Subject: reproducible-buildinfo
 
-Index: b/Makefile.pre.in
-===================================================================
+# DP: Build getbuildinfo.o with DATE/TIME values when defined
+---
+ Makefile.pre.in | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Makefile.pre.in b/Makefile.pre.in
+index f94876b..391f340 100644
 --- a/Makefile.pre.in
 +++ b/Makefile.pre.in
 @@ -753,6 +753,8 @@ Modules/getbuildinfo.o: $(PARSER_OBJS) \
- 	      -DHGVERSION="\"`LC_ALL=C $(HGVERSION)`\"" \
- 	      -DHGTAG="\"`LC_ALL=C $(HGTAG)`\"" \
- 	      -DHGBRANCH="\"`LC_ALL=C $(HGBRANCH)`\"" \
+ 	      -DGITVERSION="\"`LC_ALL=C $(GITVERSION)`\"" \
+ 	      -DGITTAG="\"`LC_ALL=C $(GITTAG)`\"" \
+ 	      -DGITBRANCH="\"`LC_ALL=C $(GITBRANCH)`\"" \
 +	      $(if $(BUILD_DATE),-DDATE='"$(BUILD_DATE)"') \
 +	      $(if $(BUILD_TIME),-DTIME='"$(BUILD_TIME)"') \
  	      -o $@ $(srcdir)/Modules/getbuildinfo.c

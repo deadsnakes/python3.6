@@ -108,11 +108,11 @@ Notes:
 
 (1)
    This is a short-circuit operator, so it only evaluates the second
-   argument if the first one is :const:`False`.
+   argument if the first one is false.
 
 (2)
    This is a short-circuit operator, so it only evaluates the second
-   argument if the first one is :const:`True`.
+   argument if the first one is true.
 
 (3)
    ``not`` has a lower priority than non-Boolean operators, so ``not a == b`` is
@@ -927,7 +927,7 @@ Notes:
    :ref:`faq-multidimensional-list`.
 
 (3)
-   If *i* or *j* is negative, the index is relative to the end of the string:
+   If *i* or *j* is negative, the index is relative to the end of sequence *s*:
    ``len(s) + i`` or ``len(s) + j`` is substituted.  But note that ``-0`` is
    still ``0``.
 
@@ -942,8 +942,10 @@ Notes:
    The slice of *s* from *i* to *j* with step *k* is defined as the sequence of
    items with index  ``x = i + n*k`` such that ``0 <= n < (j-i)/k``.  In other words,
    the indices are ``i``, ``i+k``, ``i+2*k``, ``i+3*k`` and so on, stopping when
-   *j* is reached (but never including *j*).  If *i* or *j* is greater than
-   ``len(s)``, use ``len(s)``.  If *i* or *j* are omitted or ``None``, they become
+   *j* is reached (but never including *j*).  When *k* is positive,
+   *i* and *j* are reduced to ``len(s)`` if they are greater.
+   When *k* is negative, *i* and *j* are reduced to ``len(s) - 1`` if
+   they are greater.  If *i* or *j* are omitted or ``None``, they become
    "end" values (which end depends on the sign of *k*).  Note, *k* cannot be zero.
    If *k* is ``None``, it is treated like ``1``.
 
@@ -1644,18 +1646,20 @@ expression support in the :mod:`re` module).
 
    Return true if all characters in the string are decimal
    characters and there is at least one character, false
-   otherwise. Decimal characters are those from general category "Nd". This category
-   includes digit characters, and all characters
-   that can be used to form decimal-radix numbers, e.g. U+0660,
-   ARABIC-INDIC DIGIT ZERO.
+   otherwise. Decimal characters are those that can be used to form
+   numbers in base 10, e.g. U+0660, ARABIC-INDIC DIGIT
+   ZERO.  Formally a decimal character is a character in the Unicode
+   General Category "Nd".
 
 
 .. method:: str.isdigit()
 
    Return true if all characters in the string are digits and there is at least one
    character, false otherwise.  Digits include decimal characters and digits that need
-   special handling, such as the compatibility superscript digits.  Formally, a digit
-   is a character that has the property value Numeric_Type=Digit or Numeric_Type=Decimal.
+   special handling, such as the compatibility superscript digits.
+   This covers digits which cannot be used to form numbers in base 10,
+   like the Kharosthi numbers.  Formally, a digit is a character that has the
+   property value Numeric_Type=Digit or Numeric_Type=Decimal.
 
 
 .. method:: str.isidentifier()
@@ -2158,7 +2162,7 @@ The conversion types are:
 +------------+-----------------------------------------------------+-------+
 | ``'o'``    | Signed octal value.                                 | \(1)  |
 +------------+-----------------------------------------------------+-------+
-| ``'u'``    | Obsolete type -- it is identical to ``'d'``.        | \(7)  |
+| ``'u'``    | Obsolete type -- it is identical to ``'d'``.        | \(6)  |
 +------------+-----------------------------------------------------+-------+
 | ``'x'``    | Signed hexadecimal (lowercase).                     | \(2)  |
 +------------+-----------------------------------------------------+-------+
@@ -2199,15 +2203,12 @@ The conversion types are:
 Notes:
 
 (1)
-   The alternate form causes a leading zero (``'0'``) to be inserted between
-   left-hand padding and the formatting of the number if the leading character
-   of the result is not already a zero.
+   The alternate form causes a leading octal specifier (``'0o'``) to be
+   inserted before the first digit.
 
 (2)
    The alternate form causes a leading ``'0x'`` or ``'0X'`` (depending on whether
-   the ``'x'`` or ``'X'`` format was used) to be inserted between left-hand padding
-   and the formatting of the number if the leading character of the result is not
-   already a zero.
+   the ``'x'`` or ``'X'`` format was used) to be inserted before the first digit.
 
 (3)
    The alternate form causes the result to always contain a decimal point, even if
@@ -2226,8 +2227,7 @@ Notes:
 (5)
    If precision is ``N``, the output is truncated to ``N`` characters.
 
-
-(7)
+(6)
    See :pep:`237`.
 
 Since Python strings have an explicit length, ``%s`` conversions do not assume
@@ -3303,15 +3303,12 @@ The conversion types are:
 Notes:
 
 (1)
-   The alternate form causes a leading zero (``'0'``) to be inserted between
-   left-hand padding and the formatting of the number if the leading character
-   of the result is not already a zero.
+   The alternate form causes a leading octal specifier (``'0o'``) to be
+   inserted before the first digit.
 
 (2)
    The alternate form causes a leading ``'0x'`` or ``'0X'`` (depending on whether
-   the ``'x'`` or ``'X'`` format was used) to be inserted between left-hand padding
-   and the formatting of the number if the leading character of the result is not
-   already a zero.
+   the ``'x'`` or ``'X'`` format was used) to be inserted before the first digit.
 
 (3)
    The alternate form causes the result to always contain a decimal point, even if

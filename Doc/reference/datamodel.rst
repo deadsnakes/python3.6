@@ -788,11 +788,10 @@ Custom classes
    Special attributes: :attr:`~definition.__name__` is the class name; :attr:`__module__` is
    the module name in which the class was defined; :attr:`~object.__dict__` is the
    dictionary containing the class's namespace; :attr:`~class.__bases__` is a
-   tuple (possibly empty or a singleton) containing the base classes, in the
-   order of their occurrence in the base class list; :attr:`__doc__` is the
-   class's documentation string, or ``None`` if undefined;
-   :attr:`__annotations__` (optional) is a dictionary containing
-   :term:`variable annotations <variable annotation>` collected during
+   tuple containing the base classes, in the order of their occurrence in the
+   base class list; :attr:`__doc__` is the class's documentation string,
+   or ``None`` if undefined; :attr:`__annotations__` (optional) is a dictionary
+   containing :term:`variable annotations <variable annotation>` collected during
    class body execution.
 
 Class instances
@@ -1338,11 +1337,14 @@ Basic customization
 
    Called by built-in function :func:`hash` and for operations on members of
    hashed collections including :class:`set`, :class:`frozenset`, and
-   :class:`dict`.  :meth:`__hash__` should return an integer.  The only
-   required property is that objects which compare equal have the same hash
-   value; it is advised to somehow mix together (e.g. using exclusive or) the
-   hash values for the components of the object that also play a part in
-   comparison of objects.
+   :class:`dict`.  :meth:`__hash__` should return an integer. The only required
+   property is that objects which compare equal have the same hash value; it is
+   advised to mix together the hash values of the components of the object that
+   also play a part in comparison of objects by packing them into a tuple and
+   hashing the tuple. Example::
+
+       def __hash__(self):
+           return hash((self.name, self.nick, self.color))
 
    .. note::
 

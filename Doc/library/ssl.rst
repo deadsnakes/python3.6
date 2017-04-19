@@ -616,7 +616,7 @@ Constants
 
 .. data:: PROTOCOL_TLS_CLIENT
 
-   Auto-negotiate the the highest protocol version like :data:`PROTOCOL_SSLv23`,
+   Auto-negotiate the highest protocol version like :data:`PROTOCOL_SSLv23`,
    but only support client-side :class:`SSLSocket` connections. The protocol
    enables :data:`CERT_REQUIRED` and :attr:`~SSLContext.check_hostname` by
    default.
@@ -625,7 +625,7 @@ Constants
 
 .. data:: PROTOCOL_TLS_SERVER
 
-   Auto-negotiate the the highest protocol version like :data:`PROTOCOL_SSLv23`,
+   Auto-negotiate the highest protocol version like :data:`PROTOCOL_SSLv23`,
    but only support server-side :class:`SSLSocket` connections.
 
    .. versionadded:: 3.6
@@ -636,7 +636,7 @@ Constants
 
    .. deprecated:: 3.6
 
-      Use data:`PROTOCOL_TLS` instead.
+      Use :data:`PROTOCOL_TLS` instead.
 
 .. data:: PROTOCOL_SSLv2
 
@@ -667,7 +667,7 @@ Constants
    .. deprecated:: 3.6
 
       OpenSSL has deprecated all version specific protocols. Use the default
-      protocol data:`PROTOCOL_TLS` with flags like data:`OP_NO_SSLv3` instead.
+      protocol :data:`PROTOCOL_TLS` with flags like :data:`OP_NO_SSLv3` instead.
 
 .. data:: PROTOCOL_TLSv1
 
@@ -676,7 +676,7 @@ Constants
    .. deprecated:: 3.6
 
       OpenSSL has deprecated all version specific protocols. Use the default
-      protocol data:`PROTOCOL_TLS` with flags like data:`OP_NO_SSLv3` instead.
+      protocol :data:`PROTOCOL_TLS` with flags like :data:`OP_NO_SSLv3` instead.
 
 .. data:: PROTOCOL_TLSv1_1
 
@@ -688,7 +688,7 @@ Constants
    .. deprecated:: 3.6
 
       OpenSSL has deprecated all version specific protocols. Use the default
-      protocol data:`PROTOCOL_TLS` with flags like data:`OP_NO_SSLv3` instead.
+      protocol :data:`PROTOCOL_TLS` with flags like :data:`OP_NO_SSLv3` instead.
 
 .. data:: PROTOCOL_TLSv1_2
 
@@ -701,7 +701,7 @@ Constants
    .. deprecated:: 3.6
 
       OpenSSL has deprecated all version specific protocols. Use the default
-      protocol data:`PROTOCOL_TLS` with flags like data:`OP_NO_SSLv3` instead.
+      protocol :data:`PROTOCOL_TLS` with flags like :data:`OP_NO_SSLv3` instead.
 
 .. data:: OP_ALL
 
@@ -846,7 +846,7 @@ Constants
    The version string of the OpenSSL library loaded by the interpreter::
 
     >>> ssl.OPENSSL_VERSION
-    'OpenSSL 0.9.8k 25 Mar 2009'
+    'OpenSSL 1.0.2k  26 Jan 2017'
 
    .. versionadded:: 3.2
 
@@ -856,7 +856,7 @@ Constants
    OpenSSL library::
 
     >>> ssl.OPENSSL_VERSION_INFO
-    (0, 9, 8, 11, 15)
+    (1, 0, 2, 11, 15)
 
    .. versionadded:: 3.2
 
@@ -865,9 +865,9 @@ Constants
    The raw version number of the OpenSSL library, as a single integer::
 
     >>> ssl.OPENSSL_VERSION_NUMBER
-    9470143
+    268443839
     >>> hex(ssl.OPENSSL_VERSION_NUMBER)
-    '0x9080bf'
+    '0x100020bf'
 
    .. versionadded:: 3.2
 
@@ -948,7 +948,7 @@ SSL Sockets
    :ref:`notes on non-blocking sockets <ssl-nonblocking>`.
 
    Usually, :class:`SSLSocket` are not created directly, but using the
-   the :meth:`SSLContext.wrap_socket` method.
+   :meth:`SSLContext.wrap_socket` method.
 
    .. versionchanged:: 3.5
       The :meth:`sendfile` method was added.

@@ -1,8 +1,15 @@
+From: Matthias Klose <doko@debian.org>
+Date: Wed, 19 Apr 2017 12:25:35 -0700
+Subject: bdist-wininst-notfound
+
 # DP: suggest installation of the pythonX.Y-dev package, if bdist_wininst
 # DP: cannot find the wininst-* files.
+---
+ Lib/distutils/command/bdist_wininst.py | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Index: b/Lib/distutils/command/bdist_wininst.py
-===================================================================
+diff --git a/Lib/distutils/command/bdist_wininst.py b/Lib/distutils/command/bdist_wininst.py
+index d3e1d3a..430bda5 100644
 --- a/Lib/distutils/command/bdist_wininst.py
 +++ b/Lib/distutils/command/bdist_wininst.py
 @@ -354,7 +354,10 @@ class bdist_wininst(Command):
