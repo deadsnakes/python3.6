@@ -1,3 +1,9 @@
+python3.6 (3.6.1-1+xenial1) UNRELEASED; urgency=medium
+
+  * Python 3.6.1 release.
+
+ -- Anthony Sottile <asottile@umich.edu>  Wed, 19 Apr 2017 12:33:16 -0700
+
 python3.6 (3.6.0-1+xenial1) xenial; urgency=medium
 
   [ Anthony Sottile ]
