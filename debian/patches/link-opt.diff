@@ -1,10 +1,17 @@
-# DP: Call the linker with -O1 -Bsymbolic-functions
+From: Matthias Klose <doko@debian.org>
+Date: Wed, 19 Apr 2017 12:25:35 -0700
+Subject: link-opt
 
-Index: b/configure.ac
-===================================================================
+# DP: Call the linker with -O1 -Bsymbolic-functions
+---
+ configure.ac | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 9eacf52..2a532f6 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -2489,8 +2489,8 @@ then
+@@ -2479,8 +2479,8 @@ then
  		fi
  		;;
  	Linux*|GNU*|QNX*)
@@ -15,10 +22,10 @@ Index: b/configure.ac
  	BSD/OS*/4*)
  		LDSHARED="gcc -shared"
  		LDCXXSHARED="g++ -shared";;
-@@ -2588,7 +2588,7 @@ then
- 	    LINKFORSHARED="-Wl,-E -Wl,+s";;
+@@ -2580,7 +2580,7 @@ then
  #	    LINKFORSHARED="-Wl,-E -Wl,+s -Wl,+b\$(BINLIBDEST)/lib-dynload";;
  	BSD/OS/4*) LINKFORSHARED="-Xlinker -export-dynamic";;
+ 	Linux-android*) LINKFORSHARED="-pie -Xlinker -export-dynamic";;
 -	Linux*|GNU*) LINKFORSHARED="-Xlinker -export-dynamic";;
 +	Linux*|GNU*) LINKFORSHARED="-Xlinker -export-dynamic -Wl,-O1 -Wl,-Bsymbolic-functions";;
  	# -u libsys_s pulls in all symbols in libsys

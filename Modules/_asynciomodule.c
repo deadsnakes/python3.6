@@ -521,7 +521,7 @@ _asyncio_Future_remove_done_callback(FutureObj *self, PyObject *fn)
         return NULL;
     }
 
-    for (i = 0; i < len; i++) {
+    for (i = 0; i < PyList_GET_SIZE(self->fut_callbacks); i++) {
         int ret;
         PyObject *item = PyList_GET_ITEM(self->fut_callbacks, i);
 
@@ -1327,7 +1327,7 @@ _asyncio_Task___init___impl(TaskObj *self, PyObject *coro, PyObject *loop)
         return -1;
     }
 
-    res = _PyObject_CallMethodId(all_tasks, &PyId_add, "O", self, NULL);
+    res = _PyObject_CallMethodIdObjArgs(all_tasks, &PyId_add, self, NULL);
     if (res == NULL) {
         return -1;
     }
@@ -1413,7 +1413,7 @@ TaskObj_get_fut_waiter(TaskObj *task)
 @classmethod
 _asyncio.Task.current_task
 
-    loop: 'O' = NULL
+    loop: 'O' = None
 
 Return the currently running task in an event loop or None.
 
@@ -1424,12 +1424,12 @@ None is returned when called not in the context of a Task.
 
 static PyObject *
 _asyncio_Task_current_task_impl(PyTypeObject *type, PyObject *loop)
-/*[clinic end generated code: output=99fbe7332c516e03 input=cd784537f02cf833]*/
+/*[clinic end generated code: output=99fbe7332c516e03 input=a0d6cdf2e3b243e1]*/
 {
     PyObject *res;
 
-    if (loop == NULL) {
-        loop = PyObject_CallObject(asyncio_get_event_loop, NULL);
+    if (loop == Py_None) {
+        loop = _PyObject_CallNoArg(asyncio_get_event_loop);
         if (loop == NULL) {
             return NULL;
         }
@@ -1500,7 +1500,7 @@ fail:
 @classmethod
 _asyncio.Task.all_tasks
 
-    loop: 'O' = NULL
+    loop: 'O' = None
 
 Return a set of all tasks for an event loop.
 
@@ -1509,12 +1509,12 @@ By default all tasks for the current event loop are returned.
 
 static PyObject *
 _asyncio_Task_all_tasks_impl(PyTypeObject *type, PyObject *loop)
-/*[clinic end generated code: output=11f9b20749ccca5d input=cd64aa5f88bd5c49]*/
+/*[clinic end generated code: output=11f9b20749ccca5d input=c6f5b53bd487488f]*/
 {
     PyObject *res;
 
-    if (loop == NULL) {
-        loop = PyObject_CallObject(asyncio_get_event_loop, NULL);
+    if (loop == Py_None) {
+        loop = _PyObject_CallNoArg(asyncio_get_event_loop);
         if (loop == NULL) {
             return NULL;
         }
@@ -1838,8 +1838,8 @@ task_call_wakeup(TaskObj *task, PyObject *fut)
     }
     else {
         /* `task` is a subclass of Task */
-        return _PyObject_CallMethodId(
-            (PyObject*)task, &PyId__wakeup, "O", fut, NULL);
+        return _PyObject_CallMethodIdObjArgs((PyObject*)task, &PyId__wakeup,
+                                             fut, NULL);
     }
 }
 
@@ -1854,8 +1854,8 @@ task_call_step(TaskObj *task, PyObject *arg)
         if (arg == NULL) {
             arg = Py_None;
         }
-        return _PyObject_CallMethodId(
-            (PyObject*)task, &PyId__step, "O", arg, NULL);
+        return _PyObject_CallMethodIdObjArgs((PyObject*)task, &PyId__step,
+                                             arg, NULL);
     }
 }
 
@@ -1869,8 +1869,8 @@ task_call_step_soon(TaskObj *task, PyObject *arg)
         return -1;
     }
 
-    handle = _PyObject_CallMethodId(
-        task->task_loop, &PyId_call_soon, "O", cb, NULL);
+    handle = _PyObject_CallMethodIdObjArgs(task->task_loop, &PyId_call_soon,
+                                           cb, NULL);
     Py_DECREF(cb);
     if (handle == NULL) {
         return -1;
@@ -2135,8 +2135,9 @@ task_step_impl(TaskObj *task, PyObject *exc)
                 if (wrapper == NULL) {
                     goto fail;
                 }
-                res = _PyObject_CallMethodId(
-                    result, &PyId_add_done_callback, "O", wrapper, NULL);
+                res = _PyObject_CallMethodIdObjArgs(result,
+                                                    &PyId_add_done_callback,
+                                                    wrapper, NULL);
                 Py_DECREF(wrapper);
                 if (res == NULL) {
                     goto fail;

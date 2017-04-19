@@ -42,6 +42,12 @@ module-level functions and methods on
 that don't require you to compile a regex object first, but miss some
 fine-tuning parameters.
 
+.. seealso::
+
+   The third-party `regex <https://pypi.python.org/pypi/regex/>`_ module,
+   which has an API compatible with the standard library :mod:`re` module,
+   but offers additional functionality and a more thorough Unicode support.
+
 
 .. _re-syntax:
 
@@ -762,7 +768,7 @@ form.
       now are errors.
 
    .. deprecated-removed:: 3.5 3.7
-      Unknown escapes in *repl* consist of ``'\'`` and ASCII letter now raise
+      Unknown escapes in *repl* consisting of ``'\'`` and an ASCII letter now raise
       a deprecation warning and will be forbidden in Python 3.7.
 
 
@@ -1465,7 +1471,7 @@ successive matches::
             elif kind == 'SKIP':
                 pass
             elif kind == 'MISMATCH':
-                raise RuntimeError('%r unexpected on line %d' % (value, line_num))
+                raise RuntimeError(f'{value!r} unexpected on line {line_num}')
             else:
                 if kind == 'ID' and value in keywords:
                     kind = value

@@ -1,7 +1,14 @@
-# DP: Don't link extensions with the shared libpython library.
+From: Matthias Klose <doko@debian.org>
+Date: Wed, 19 Apr 2017 12:25:35 -0700
+Subject: ext-no-libpython-link
 
-Index: b/Lib/distutils/command/build_ext.py
-===================================================================
+# DP: Don't link extensions with the shared libpython library.
+---
+ Lib/distutils/command/build_ext.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Lib/distutils/command/build_ext.py b/Lib/distutils/command/build_ext.py
+index 74de782..7d08d33 100644
 --- a/Lib/distutils/command/build_ext.py
 +++ b/Lib/distutils/command/build_ext.py
 @@ -230,7 +230,7 @@ class build_ext(Command):

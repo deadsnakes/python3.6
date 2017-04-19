@@ -86,7 +86,7 @@ distribution := $(shell lsb_release -is)
 distrelease  := $(shell lsb_release -cs)
 
 VER=3.6
-SVER=3.6.0~b2
+SVER=3.6.1
 NVER=3.7
 PVER=python$(VER)
 EXT_VER=$(subst .,,$(VER))
@@ -1094,7 +1094,7 @@ endif
 	: # Move the docs into $(p_base)'s /usr/share/doc/$(PVER) directory,
 	: # all other packages only have a copyright file.
 	dh_installdocs -p$(p_base) \
-		README Misc/NEWS Misc/ACKS
+		README.rst Misc/NEWS Misc/ACKS
 	ln -sf NEWS.gz $(d_base)/usr/share/doc/$(p_base)/changelog.gz
 	dh_installdocs --all -N$(p_base) -N$(p_dev) -N$(p_dbg) -N$(p_lib) debian/README.Debian
 
