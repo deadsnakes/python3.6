@@ -5083,10 +5083,10 @@ onError:
     return NULL;
 }
 
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(__ANDROID__)
 
 /* Simplified UTF-8 decoder using surrogateescape error handler,
-   used to decode the command line arguments on Mac OS X.
+   used to decode the command line arguments on Mac OS X and Android.
 
    Return a pointer to a newly allocated wide character string (use
    PyMem_RawFree() to free the memory), or NULL on memory allocation error. */
@@ -5137,7 +5137,7 @@ _Py_DecodeUTF8_surrogateescape(const char *s, Py_ssize_t size)
     return unicode;
 }
 
-#endif /* __APPLE__ */
+#endif /* __APPLE__ or __ANDROID__ */
 
 /* Primary internal function which creates utf8 encoded bytes objects.
 
@@ -9988,7 +9988,7 @@ _PyUnicode_JoinArray(PyObject *separator, PyObject **items, Py_ssize_t seqlen)
     use_memcpy = 1;
 #endif
     for (i = 0; i < seqlen; i++) {
-        const Py_ssize_t old_sz = sz;
+        size_t add_sz;
         item = items[i];
         if (!PyUnicode_Check(item)) {
             PyErr_Format(PyExc_TypeError,
@@ -9999,16 +9999,18 @@ _PyUnicode_JoinArray(PyObject *separator, PyObject **items, Py_ssize_t seqlen)
         }
         if (PyUnicode_READY(item) == -1)
             goto onError;
-        sz += PyUnicode_GET_LENGTH(item);
+        add_sz = PyUnicode_GET_LENGTH(item);
         item_maxchar = PyUnicode_MAX_CHAR_VALUE(item);
         maxchar = Py_MAX(maxchar, item_maxchar);
-        if (i != 0)
-            sz += seplen;
-        if (sz < old_sz || sz > PY_SSIZE_T_MAX) {
+        if (i != 0) {
+            add_sz += seplen;
+        }
+        if (add_sz > (size_t)(PY_SSIZE_T_MAX - sz)) {
             PyErr_SetString(PyExc_OverflowError,
                             "join() result is too long for a Python string");
             goto onError;
         }
+        sz += add_sz;
         if (use_memcpy && last_obj != NULL) {
             if (PyUnicode_KIND(last_obj) != PyUnicode_KIND(item))
                 use_memcpy = 0;
@@ -10646,7 +10648,7 @@ replace(PyObject *self, PyObject *str1,
             u = unicode_empty;
             goto done;
         }
-        if (new_size > (PY_SSIZE_T_MAX >> (rkind-1))) {
+        if (new_size > (PY_SSIZE_T_MAX / rkind)) {
             PyErr_SetString(PyExc_OverflowError,
                             "replace string is too long");
             goto error;
@@ -14324,11 +14326,12 @@ formatchar(PyObject *v)
             if (iobj == NULL) {
                 goto onError;
             }
-            v = iobj;
+            x = PyLong_AsLong(iobj);
             Py_DECREF(iobj);
         }
-        /* Integer input truncated to a character */
-        x = PyLong_AsLong(v);
+        else {
+            x = PyLong_AsLong(v);
+        }
         if (x == -1 && PyErr_Occurred())
             goto onError;
 

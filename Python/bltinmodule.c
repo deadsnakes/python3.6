@@ -2107,7 +2107,7 @@ reverse flag can be set to request the result in descending order.
 [end disabled clinic input]*/
 
 PyDoc_STRVAR(builtin_sorted__doc__,
-"sorted($module, iterable, key=None, reverse=False)\n"
+"sorted($module, iterable, /, *, key=None, reverse=False)\n"
 "--\n"
 "\n"
 "Return a new list containing all items from the iterable in ascending order.\n"
@@ -2123,7 +2123,7 @@ builtin_sorted(PyObject *self, PyObject *args, PyObject *kwds)
 {
     PyObject *newlist, *v, *seq, *keyfunc=NULL, **newargs;
     PyObject *callable;
-    static char *kwlist[] = {"iterable", "key", "reverse", 0};
+    static char *kwlist[] = {"", "key", "reverse", 0};
     int reverse;
     Py_ssize_t nargs;
 
@@ -2142,6 +2142,7 @@ builtin_sorted(PyObject *self, PyObject *args, PyObject *kwds)
         return NULL;
     }
 
+    assert(PyTuple_GET_SIZE(args) >= 1);
     newargs = &PyTuple_GET_ITEM(args, 1);
     nargs = PyTuple_GET_SIZE(args) - 1;
     v = _PyObject_FastCallDict(callable, newargs, nargs, kwds);

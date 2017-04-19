@@ -974,7 +974,7 @@ _PyBytes_FormatEx(const char *format, Py_ssize_t format_len,
             /* Write the numeric prefix for "x", "X" and "o" formats
                if the alternate form is used.
                For example, write "0x" for the "%#x" format. */
-            if ((flags & F_ALT) && (c == 'x' || c == 'X')) {
+            if ((flags & F_ALT) && (c == 'o' || c == 'x' || c == 'X')) {
                 assert(pbuf[0] == '0');
                 assert(pbuf[1] == c);
                 if (fill != ' ') {
@@ -999,8 +999,7 @@ _PyBytes_FormatEx(const char *format, Py_ssize_t format_len,
             if (fill == ' ') {
                 if (sign)
                     *res++ = sign;
-                if ((flags & F_ALT) &&
-                    (c == 'x' || c == 'X')) {
+                if ((flags & F_ALT) && (c == 'o' || c == 'x' || c == 'X')) {
                     assert(pbuf[0] == '0');
                     assert(pbuf[1] == c);
                     *res++ = *pbuf++;
@@ -2594,16 +2593,20 @@ bytes_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     if (PyIndex_Check(x)) {
         size = PyNumber_AsSsize_t(x, PyExc_OverflowError);
         if (size == -1 && PyErr_Occurred()) {
-            return NULL;
+            if (PyErr_ExceptionMatches(PyExc_OverflowError))
+                return NULL;
+            PyErr_Clear();  /* fall through */
         }
-        if (size < 0) {
-            PyErr_SetString(PyExc_ValueError, "negative count");
-            return NULL;
+        else {
+            if (size < 0) {
+                PyErr_SetString(PyExc_ValueError, "negative count");
+                return NULL;
+            }
+            new = _PyBytes_FromSize(size, 1);
+            if (new == NULL)
+                return NULL;
+            return new;
         }
-        new = _PyBytes_FromSize(size, 1);
-        if (new == NULL)
-            return NULL;
-        return new;
     }
 
     return PyBytes_FromObject(x);
