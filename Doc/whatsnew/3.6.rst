@@ -2,8 +2,6 @@
   What's New In Python 3.6
 ****************************
 
-:Release: |release|
-:Date: |today|
 :Editors: Elvis Pranskevichus <elvis@magic.io>, Yury Selivanov <yury@magic.io>
 
 .. Rules for maintenance:
@@ -81,7 +79,9 @@ CPython implementation improvements:
 
 * The :ref:`dict <typesmapping>` type has been reimplemented to use
   a :ref:`more compact representation <whatsnew36-compactdict>`
-  similar to the `PyPy dict implementation`_.  This resulted in dictionaries
+  based on `a proposal by Raymond Hettinger
+  <https://mail.python.org/pipermail/python-dev/2012-December/123028.html>`_
+  and similar to the `PyPy dict implementation`_.  This resulted in dictionaries
   using 20% to 25% less memory when compared to Python 3.5.
 
 * Customization of class creation has been simplified with the
@@ -118,7 +118,7 @@ Significant improvements in the standard library:
   :ref:`Local Time Disambiguation <whatsnew36-pep495>`.
 
 * The :mod:`typing` module received a number of
-  :ref:`improvements <whatsnew36-typing>` and is no longer provisional.
+  :ref:`improvements <whatsnew36-typing>`.
 
 * The :mod:`tracemalloc` module has been significantly reworked
   and is now used to provide better output for :exc:`ResourceWarning`
@@ -363,7 +363,7 @@ ensure that the new ``__classcell__`` namespace entry is propagated to
 PEP 487: Descriptor Protocol Enhancements
 -----------------------------------------
 
-:pep:`487` extends the descriptor protocol has to include the new optional
+:pep:`487` extends the descriptor protocol to include the new optional
 :meth:`~object.__set_name__` method.  Whenever a new class is defined, the new
 method will be called on all descriptors included in the definition, providing
 them with a reference to the class being defined and the name given to the
@@ -581,7 +581,10 @@ New :ref:`dict <typesmapping>` implementation
 ---------------------------------------------
 
 The :ref:`dict <typesmapping>` type now uses a "compact" representation
-`pioneered by PyPy <https://morepypy.blogspot.com/2015/01/faster-more-memory-efficient-and-more.html>`_.
+based on `a proposal by Raymond Hettinger
+<https://mail.python.org/pipermail/python-dev/2012-December/123028.html>`_
+which was `first implemented by PyPy
+<https://morepypy.blogspot.com/2015/01/faster-more-memory-efficient-and-more.html>`_.
 The memory usage of the new :func:`dict` is between 20% and 25% smaller
 compared to Python 3.5.
 
@@ -1366,6 +1369,9 @@ The socket module now supports the address family
 (Contributed by Christian Heimes in :issue:`27744` with support from
 Victor Stinner.)
 
+New Linux constants ``TCP_USER_TIMEOUT`` and ``TCP_CONGESTION`` were added.
+(Contributed by Omar Sandoval, issue:`26273`).
+
 
 socketserver
 ------------
@@ -1539,11 +1545,8 @@ to filter block traces by their address space (domain).
 typing
 ------
 
-Starting with Python 3.6 the :mod:`typing` module is no longer provisional
-and its API is considered stable.
-
-Since the :mod:`typing` module was :term:`provisional <provisional api>`
-in Python 3.5, all changes introduced in Python 3.6 have also been
+Since the :mod:`typing` module is :term:`provisional <provisional api>`,
+all changes introduced in Python 3.6 have also been
 backported to Python 3.5.x.
 
 The :mod:`typing` module has a much improved support for generic type
@@ -1816,7 +1819,7 @@ Build and C API Changes
 
 * The ``--enable-optimizations`` configure flag has been added. Turning it on
   will activate expensive optimizations like PGO.
-  (Original patch by Alecsandru Patrascu of Intel in :issue:`26539`.)
+  (Original patch by Alecsandru Patrascu of Intel in :issue:`26359`.)
 
 * The :term:`GIL <global interpreter lock>` must now be held when allocator
   functions of :c:data:`PYMEM_DOMAIN_OBJ` (ex: :c:func:`PyObject_Malloc`) and

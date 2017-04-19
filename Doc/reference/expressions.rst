@@ -190,7 +190,7 @@ Since Python 3.6, in an :keyword:`async def` function, an :keyword:`async for`
 clause may be used to iterate over a :term:`asynchronous iterator`.
 A comprehension in an :keyword:`async def` function may consist of either a
 :keyword:`for` or :keyword:`async for` clause following the leading
-expression, may contan additonal :keyword:`for` or :keyword:`async for`
+expression, may contain additional :keyword:`for` or :keyword:`async for`
 clauses, and may also use :keyword:`await` expressions.
 If a comprehension contains either :keyword:`async for` clauses
 or :keyword:`await` expressions it is called an
@@ -827,7 +827,7 @@ series of :term:`arguments <argument>`:
    starred_and_keywords: ("*" `expression` | `keyword_item`)
                 : ("," "*" `expression` | "," `keyword_item`)*
    keywords_arguments: (`keyword_item` | "**" `expression`)
-                : ("," `keyword_item` | "**" `expression`)*
+                : ("," `keyword_item` | "," "**" `expression`)*
    keyword_item: `identifier` "=" `expression`
 
 An optional trailing comma may be present after the positional and keyword arguments
@@ -1317,7 +1317,7 @@ built-in types.
 * Sequences (instances of :class:`tuple`, :class:`list`, or :class:`range`) can
   be compared only within each of their types, with the restriction that ranges
   do not support order comparison.  Equality comparison across these types
-  results in unequality, and ordering comparison across these types raises
+  results in inequality, and ordering comparison across these types raises
   :exc:`TypeError`.
 
   Sequences compare lexicographically using comparison of corresponding
@@ -1414,6 +1414,10 @@ some consistency rules, if possible:
   The last two expressions apply to totally ordered collections (e.g. to
   sequences, but not to sets or mappings). See also the
   :func:`~functools.total_ordering` decorator.
+
+* The :func:`hash` result should be consistent with equality.
+  Objects that are equal should either have the same hash value,
+  or be marked as unhashable.
 
 Python does not enforce these consistency rules. In fact, the not-a-number
 values are an example for not following these rules.

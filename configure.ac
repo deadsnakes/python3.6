@@ -25,25 +25,25 @@ else
     BASECPPFLAGS=""
 fi
 
-AC_SUBST(HGVERSION)
-AC_SUBST(HGTAG)
-AC_SUBST(HGBRANCH)
+AC_SUBST(GITVERSION)
+AC_SUBST(GITTAG)
+AC_SUBST(GITBRANCH)
 
-if test -e $srcdir/.hg/dirstate
+if test -e $srcdir/.git/HEAD
 then
-AC_CHECK_PROG(HAS_HG, hg, found, not-found)
+AC_CHECK_PROG(HAS_GIT, git, found, not-found)
 else
-HAS_HG=no-repository
+HAS_GIT=no-repository
 fi
-if test $HAS_HG = found
+if test $HAS_GIT = found
 then
-    HGVERSION="hg id -i \$(srcdir)"
-    HGTAG="hg id -t \$(srcdir)"
-    HGBRANCH="hg id -b \$(srcdir)"
+    GITVERSION="git -C \$(srcdir) rev-parse --short HEAD"
+    GITTAG="git -C \$(srcdir) describe --all --always --dirty"
+    GITBRANCH="git -C \$(srcdir) name-rev --name-only HEAD"
 else
-    HGVERSION=""
-    HGTAG=""
-    HGBRANCH=""
+    GITVERSION=""
+    GITTAG=""
+    GITBRANCH=""
 fi
 
 AC_CONFIG_SRCDIR([Include/object.h])
@@ -379,6 +379,9 @@ then
        # a lot of different things including 'define_xopen_source'
        # in the case statement below.
 	case "$host" in
+	*-*-linux-android*)
+		ac_sys_system=Linux-android
+		;;
 	*-*-linux*)
 		ac_sys_system=Linux
 		;;
@@ -770,29 +773,7 @@ cat >> conftest.c <<EOF
 #undef sparc
 #undef unix
 #if defined(__ANDROID__)
-# if defined(__x86_64__) && defined(__LP64__)
-        x86_64-linux-android
-# elif defined(__i386__)
-        i686-linux-android
-# elif defined(__aarch64__) && defined(__AARCH64EL__)
-#  if defined(__ILP32__)
-        aarch64_ilp32-linux-android
-#  else
-        aarch64-linux-android
-#  endif
-# elif defined(__ARM_EABI__) && defined(__ARMEL__)
-        arm-linux-androideabi
-# elif defined(__mips_hard_float) && defined(_MIPSEL)
-#  if _MIPS_SIM == _ABIO32
-        mipsel-linux-android
-#  elif _MIPS_SIM == _ABI64
-        mips64el-linux-android
-#  else
-#   error unknown platform triplet
-#  endif
-# else
-#   error unknown platform triplet
-# endif
+    # Android is not a multiarch system.
 #elif defined(__linux__)
 # if defined(__x86_64__) && defined(__LP64__)
         x86_64-linux-gnu
@@ -935,16 +916,25 @@ AC_MSG_CHECKING([for the Android API level])
 cat >> conftest.c <<EOF
 #ifdef __ANDROID__
 #include <android/api-level.h>
-__ANDROID_API__
+android_api = __ANDROID_API__
+arm_arch = __ARM_ARCH
 #else
 #error not Android
 #endif
 EOF
 
 if $CPP $CPPFLAGS conftest.c >conftest.out 2>/dev/null; then
-  ANDROID_API_LEVEL=`grep -v '^#' conftest.out | grep -v '^ *$'`
+  ANDROID_API_LEVEL=`sed -n -e '/__ANDROID_API__/d' -e 's/^android_api = //p' conftest.out`
+  _arm_arch=`sed -n -e '/__ARM_ARCH/d' -e 's/^arm_arch = //p' conftest.out`
   AC_MSG_RESULT([$ANDROID_API_LEVEL])
   AC_DEFINE_UNQUOTED(ANDROID_API_LEVEL, $ANDROID_API_LEVEL, [The Android API level.])
+
+  AC_MSG_CHECKING([for the Android arm ABI])
+  AC_MSG_RESULT([$_arm_arch])
+  if test "$_arm_arch" = 7; then
+    BASECFLAGS="${BASECFLAGS} -mfloat-abi=softfp -mfpu=vfpv3-d16"
+    LDFLAGS="${LDFLAGS} -march=armv7-a -Wl,--fix-cortex-a8"
+  fi
 else
   AC_MSG_RESULT([not Android])
 fi
@@ -2041,7 +2031,7 @@ unistd.h utime.h \
 poll.h sys/devpoll.h sys/epoll.h sys/poll.h \
 sys/audioio.h sys/xattr.h sys/bsdtty.h sys/event.h sys/file.h sys/ioctl.h \
 sys/kern_control.h sys/loadavg.h sys/lock.h sys/mkdev.h sys/modem.h \
-sys/param.h sys/select.h sys/sendfile.h sys/socket.h sys/statvfs.h \
+sys/param.h sys/random.h sys/select.h sys/sendfile.h sys/socket.h sys/statvfs.h \
 sys/stat.h sys/syscall.h sys/sys_domain.h sys/termio.h sys/time.h \
 sys/times.h sys/types.h sys/uio.h sys/un.h sys/utsname.h sys/wait.h pty.h \
 libutil.h sys/resource.h netpacket/packet.h sysexits.h bluetooth.h \
@@ -2557,6 +2547,7 @@ then
 		 then CCSHARED="-fPIC";
 		 else CCSHARED="+z";
 		 fi;;
+	Linux-android*) ;;
 	Linux*|GNU*) CCSHARED="-fPIC";;
 	BSD/OS*/4*) CCSHARED="-fpic";;
 	FreeBSD*|NetBSD*|OpenBSD*|DragonFly*) CCSHARED="-fPIC";;
@@ -2588,6 +2579,7 @@ then
 	    LINKFORSHARED="-Wl,-E -Wl,+s";;
 #	    LINKFORSHARED="-Wl,-E -Wl,+s -Wl,+b\$(BINLIBDEST)/lib-dynload";;
 	BSD/OS/4*) LINKFORSHARED="-Xlinker -export-dynamic";;
+	Linux-android*) LINKFORSHARED="-pie -Xlinker -export-dynamic";;
 	Linux*|GNU*) LINKFORSHARED="-Xlinker -export-dynamic";;
 	# -u libsys_s pulls in all symbols in libsys
 	Darwin/*)
@@ -3406,8 +3398,7 @@ AC_CHECK_FUNCS(alarm accept4 setitimer getitimer bind_textdomain_codeset chown \
  futimens futimes gai_strerror getentropy \
  getgrouplist getgroups getlogin getloadavg getpeername getpgid getpid \
  getpriority getresuid getresgid getpwent getspnam getspent getsid getwd \
- if_nameindex \
- initgroups kill killpg lchmod lchown lockf linkat lstat lutimes mmap \
+ initgroups kill killpg lchmod lchown linkat lstat lutimes mmap \
  memrchr mbrtowc mkdirat mkfifo \
  mkfifoat mknod mknodat mktime mremap nice openat pathconf pause pipe2 plock poll \
  posix_fallocate posix_fadvise pread \
@@ -3757,6 +3748,40 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([[
   AC_MSG_RESULT(yes)
 ],[
   AC_MSG_RESULT(no)
+])
+
+# On Android API level 24 with android-ndk-r13, if_nameindex() is available,
+# but the if_nameindex structure is not defined.
+AC_MSG_CHECKING(for if_nameindex)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <stdio.h>
+#ifdef STDC_HEADERS
+# include <stdlib.h>
+# include <stddef.h>
+#else
+# ifdef HAVE_STDLIB_H
+#  include <stdlib.h>
+# endif
+#endif
+#ifdef HAVE_SYS_SOCKET_H
+# include <sys/socket.h>
+#endif
+#ifdef HAVE_NET_IF_H
+# include <net/if.h>
+#endif
+]], [[struct if_nameindex *ni = if_nameindex(); int x = ni[0].if_index;]])],
+  [AC_DEFINE(HAVE_IF_NAMEINDEX, 1, Define to 1 if you have the 'if_nameindex' function.)
+   AC_MSG_RESULT(yes)],
+  [AC_MSG_RESULT(no)
+])
+
+# Issue #28762: lockf() is available on Android API level 24, but the F_LOCK
+# macro is not defined in android-ndk-r13.
+AC_MSG_CHECKING(for lockf)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <unistd.h> ]],[[lockf(0, F_LOCK, 0);]])],
+  [AC_DEFINE(HAVE_LOCKF, 1, Define to 1 if you have the 'lockf' function and the F_LOCK macro.)
+   AC_MSG_RESULT(yes)],
+  [AC_MSG_RESULT(no)
 ])
 
 # On OSF/1 V5.1, getaddrinfo is available, but a define
@@ -4907,7 +4932,9 @@ fi
 
 # first curses header check
 ac_save_cppflags="$CPPFLAGS"
-CPPFLAGS="$CPPFLAGS -I/usr/include/ncursesw"
+if test "$cross_compiling" = no; then
+  CPPFLAGS="$CPPFLAGS -I/usr/include/ncursesw"
+fi
 
 AC_CHECK_HEADERS(curses.h ncurses.h)
 

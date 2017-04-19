@@ -1043,7 +1043,7 @@ PyCompile_OpcodeStackEffect(int opcode, int oparg)
         case CALL_FUNCTION_KW:
             return -oparg-1;
         case CALL_FUNCTION_EX:
-            return - ((oparg & 0x01) != 0) - ((oparg & 0x02) != 0);
+            return -1 - ((oparg & 0x01) != 0);
         case MAKE_FUNCTION:
             return -1 - ((oparg & 0x01) != 0) - ((oparg & 0x02) != 0) -
                 ((oparg & 0x04) != 0) - ((oparg & 0x08) != 0);
@@ -3415,7 +3415,8 @@ static int
 compiler_joined_str(struct compiler *c, expr_ty e)
 {
     VISIT_SEQ(c, expr, e->v.JoinedStr.values);
-    ADDOP_I(c, BUILD_STRING, asdl_seq_LEN(e->v.JoinedStr.values));
+    if (asdl_seq_LEN(e->v.JoinedStr.values) != 1)
+        ADDOP_I(c, BUILD_STRING, asdl_seq_LEN(e->v.JoinedStr.values));
     return 1;
 }
 
