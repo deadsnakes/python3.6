@@ -770,11 +770,13 @@
  PySet_Size@Base @SVER@
  PySet_Type@Base @SVER@
  PySignal_SetWakeupFd@Base @SVER@
+ PySlice_AdjustIndices@Base 3.6.1
  PySlice_Fini@Base @SVER@
  PySlice_GetIndices@Base @SVER@
  PySlice_GetIndicesEx@Base @SVER@
  PySlice_New@Base @SVER@
  PySlice_Type@Base @SVER@
+ PySlice_Unpack@Base 3.6.1
  PyState_AddModule@Base @SVER@
  PyState_FindModule@Base @SVER@
  PyState_RemoveModule@Base @SVER@
@@ -1153,6 +1155,7 @@
  _PyDict_Contains@Base @SVER@
  _PyDict_DebugMallocStats@Base @SVER@
  _PyDict_DelItemId@Base @SVER@
+ _PyDict_DelItemIf@Base 3.6.1
  _PyDict_DelItem_KnownHash@Base @SVER@
  _PyDict_FromKeys@Base @SVER@
  _PyDict_GetItemId@Base @SVER@
@@ -1167,6 +1170,7 @@
  _PyDict_NewPresized@Base @SVER@
  _PyDict_Next@Base @SVER@
  _PyDict_Pop@Base @SVER@
+ _PyDict_Pop_KnownHash@Base 3.6.1
  _PyDict_SizeOf@Base @SVER@
  _PyDict_SetItemId@Base @SVER@
  _PyDict_SetItem_KnownHash@Base @SVER@
@@ -1684,6 +1688,8 @@
  (arch=amd64 i386 lpia)_Py_get_387controlword@Base @SVER@
  _Py_get_blocking@Base @SVER@
  _Py_get_inheritable@Base @SVER@
+ _Py_gitidentifier@Base 3.6.1
+ _Py_gitversion@Base 3.6.1
  _Py_hashtable_clear@Base @SVER@
  _Py_hashtable_compare_direct@Base @SVER@
  _Py_hashtable_copy@Base @SVER@
@@ -1697,8 +1703,6 @@
  _Py_hashtable_pop@Base @SVER@
  _Py_hashtable_set@Base @SVER@
  _Py_hashtable_size@Base @SVER@
- _Py_hgidentifier@Base @SVER@
- _Py_hgversion@Base @SVER@
  _Py_index__doc__@Base @SVER@
  _Py_isalnum__doc__@Base @SVER@
  _Py_isalpha__doc__@Base @SVER@
