@@ -1,3 +1,9 @@
+python3.6 (3.6.1-1+trusty1) UNRELEASED; urgency=medium
+
+  * Python 3.6.1 release.
+
+ -- Anthony Sottile <asottile@umich.edu>  Wed, 19 Apr 2017 14:31:24 -0700
+
 python3.6 (3.6.0-1+trusty1) trusty; urgency=medium
 
   [ asottile ]
