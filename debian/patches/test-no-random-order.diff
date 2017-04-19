@@ -1,7 +1,14 @@
-# DP: Don't run the test suite in random order.
+From: Matthias Klose <doko@debian.org>
+Date: Wed, 19 Apr 2017 12:25:35 -0700
+Subject: test-no-random-order
 
-Index: b/Tools/scripts/run_tests.py
-===================================================================
+# DP: Don't run the test suite in random order.
+---
+ Tools/scripts/run_tests.py | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/Tools/scripts/run_tests.py b/Tools/scripts/run_tests.py
+index b582e13..3a8a50b 100644
 --- a/Tools/scripts/run_tests.py
 +++ b/Tools/scripts/run_tests.py
 @@ -37,7 +37,6 @@ def main(regrtest_args):

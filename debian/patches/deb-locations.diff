@@ -1,7 +1,15 @@
-# DP: adjust locations of directories to debian policy
+From: Matthias Klose <doko@debian.org>
+Date: Wed, 19 Apr 2017 12:25:34 -0700
+Subject: deb-locations
 
-Index: b/Lib/pydoc.py
-===================================================================
+# DP: adjust locations of directories to debian policy
+---
+ Lib/pydoc.py    | 4 ++++
+ Misc/python.man | 2 +-
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/Lib/pydoc.py b/Lib/pydoc.py
+index 39db391..b1b6584 100644
 --- a/Lib/pydoc.py
 +++ b/Lib/pydoc.py
 @@ -28,6 +28,10 @@ to a file named "<name>.html".
@@ -15,11 +23,11 @@ Index: b/Lib/pydoc.py
      https://docs.python.org/X.Y/library/
  
  This can be overridden by setting the PYTHONDOCS environment variable
-Index: b/Misc/python.man
-===================================================================
+diff --git a/Misc/python.man b/Misc/python.man
+index 385b654..fd8a6f0 100644
 --- a/Misc/python.man
 +++ b/Misc/python.man
-@@ -327,7 +327,7 @@ exception).  Error messages are written
+@@ -327,7 +327,7 @@ exception).  Error messages are written to stderr.
  These are subject to difference depending on local installation
  conventions; ${prefix} and ${exec_prefix} are installation-dependent
  and should be interpreted as for GNU software; they may be the same.

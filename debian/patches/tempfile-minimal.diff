@@ -1,7 +1,14 @@
-# DP: Avoid shutil import when it is not available.
+From: Matthias Klose <doko@debian.org>
+Date: Wed, 19 Apr 2017 12:25:35 -0700
+Subject: tempfile-minimal
 
-Index: b/Lib/tempfile.py
-===================================================================
+# DP: Avoid shutil import when it is not available.
+---
+ Lib/tempfile.py | 145 ++++++++++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 142 insertions(+), 3 deletions(-)
+
+diff --git a/Lib/tempfile.py b/Lib/tempfile.py
+index 6146235..3fc0850 100644
 --- a/Lib/tempfile.py
 +++ b/Lib/tempfile.py
 @@ -40,7 +40,146 @@ import functools as _functools

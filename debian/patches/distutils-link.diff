@@ -1,7 +1,14 @@
-# DP: Don't add standard library dirs to library_dirs and runtime_library_dirs.
+From: Matthias Klose <doko@debian.org>
+Date: Wed, 19 Apr 2017 12:25:35 -0700
+Subject: distutils-link
 
-Index: b/Lib/distutils/unixccompiler.py
-===================================================================
+# DP: Don't add standard library dirs to library_dirs and runtime_library_dirs.
+---
+ Lib/distutils/unixccompiler.py | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/Lib/distutils/unixccompiler.py b/Lib/distutils/unixccompiler.py
+index 3f321c2..4524417 100644
 --- a/Lib/distutils/unixccompiler.py
 +++ b/Lib/distutils/unixccompiler.py
 @@ -155,6 +155,17 @@ class UnixCCompiler(CCompiler):

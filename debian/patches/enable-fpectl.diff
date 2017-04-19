@@ -1,10 +1,17 @@
-# DP: Enable the build of the fpectl module.
+From: Matthias Klose <doko@debian.org>
+Date: Wed, 19 Apr 2017 12:25:35 -0700
+Subject: enable-fpectl
 
-Index: b/setup.py
-===================================================================
+# DP: Enable the build of the fpectl module.
+---
+ setup.py | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/setup.py b/setup.py
+index 32cca32..b3ee1c8 100644
 --- a/setup.py
 +++ b/setup.py
-@@ -1395,6 +1395,12 @@ class PyBuildExt(build_ext):
+@@ -1397,6 +1397,12 @@ class PyBuildExt(build_ext):
          else:
              missing.append('_curses_panel')
  

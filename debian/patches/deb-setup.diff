@@ -1,7 +1,14 @@
-# DP: Don't include /usr/local/include and /usr/local/lib as gcc search paths
+From: Matthias Klose <doko@debian.org>
+Date: Wed, 19 Apr 2017 12:25:34 -0700
+Subject: deb-setup
 
-Index: b/setup.py
-===================================================================
+# DP: Don't include /usr/local/include and /usr/local/lib as gcc search paths
+---
+ setup.py | 13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
+
+diff --git a/setup.py b/setup.py
+index f04bf22..32cca32 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -262,8 +262,10 @@ class PyBuildExt(build_ext):

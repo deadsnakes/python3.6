@@ -1,7 +1,14 @@
-# DP: pydoc: use the pager command if available.
+From: Matthias Klose <doko@debian.org>
+Date: Wed, 19 Apr 2017 12:25:36 -0700
+Subject: pydoc-use-pager
 
-Index: b/Lib/pydoc.py
-===================================================================
+# DP: pydoc: use the pager command if available.
+---
+ Lib/pydoc.py | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Lib/pydoc.py b/Lib/pydoc.py
+index e63cbc9..343b393 100644
 --- a/Lib/pydoc.py
 +++ b/Lib/pydoc.py
 @@ -1446,6 +1446,8 @@ def getpager():
