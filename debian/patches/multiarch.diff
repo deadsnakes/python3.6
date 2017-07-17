@@ -10,12 +10,12 @@ Subject: multiarch
  3 files changed, 11 insertions(+), 1 deletion(-)
 
 diff --git a/Lib/distutils/sysconfig.py b/Lib/distutils/sysconfig.py
-index 3253464..b8f8672 100644
+index 2feb8b0..d8427b0 100644
 --- a/Lib/distutils/sysconfig.py
 +++ b/Lib/distutils/sysconfig.py
-@@ -102,6 +102,9 @@ def get_python_inc(plat_specific=0, prefix=None):
+@@ -99,6 +99,9 @@ def get_python_inc(plat_specific=0, prefix=None):
                  incdir = os.path.join(get_config_var('srcdir'), 'Include')
-             return os.path.normpath(incdir)
+                 return os.path.normpath(incdir)
          python_dir = 'python' + get_python_version() + build_flags
 +        if not python_build and plat_specific:
 +            import sysconfig
@@ -41,10 +41,10 @@ index 9314e71..bbad7c3 100644
          srcdir = _CONFIG_VARS.get('srcdir', _PROJECT_BASE)
          if os.name == 'posix':
 diff --git a/Makefile.pre.in b/Makefile.pre.in
-index 016599a..f94876b 100644
+index 22a177c..5354fa8 100644
 --- a/Makefile.pre.in
 +++ b/Makefile.pre.in
-@@ -781,6 +781,7 @@ Modules/signalmodule.o: $(srcdir)/Modules/signalmodule.c $(srcdir)/Modules/posix
+@@ -760,6 +760,7 @@ Modules/signalmodule.o: $(srcdir)/Modules/signalmodule.c $(srcdir)/Modules/posix
  
  Python/dynload_shlib.o: $(srcdir)/Python/dynload_shlib.c Makefile
  	$(CC) -c $(PY_CORE_CFLAGS) \
@@ -52,12 +52,12 @@ index 016599a..f94876b 100644
  		-DSOABI='"$(SOABI)"' \
  		-o $@ $(srcdir)/Python/dynload_shlib.c
  
-@@ -1387,7 +1388,7 @@ inclinstall:
+@@ -1390,7 +1391,7 @@ inclinstall:
  LIBPL=		@LIBPL@
  
  # pkgconfig directory
 -LIBPC=		$(LIBDIR)/pkgconfig
 +LIBPC=		$(LIBDIR)/$(MULTIARCH)/pkgconfig
  
- libainstall:	all python-config
+ libainstall:	@DEF_MAKE_RULE@ python-config
  	@for i in $(LIBDIR) $(LIBPL) $(LIBPC); \
