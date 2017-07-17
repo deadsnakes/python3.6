@@ -128,6 +128,7 @@ Andrew Bennetts
 Andy Bensky
 Bennett Benson
 Ezra Berch
+Stuart Berg
 Michel Van den Bergh
 Julian Berman
 Brice Berna
@@ -308,6 +309,7 @@ Garrett Cooper
 Greg Copeland
 Ian Cordasco
 Aldo Cortesi
+Mircea Cosbuc
 David Costanzo
 Scott Cotton
 Greg Couch
@@ -542,6 +544,7 @@ Tim Graham
 Kim Gräsman
 Nathaniel Gray
 Eddy De Greef
+Duane Griffin
 Grant Griffin
 Andrea Griffini
 Duncan Grisby
@@ -551,6 +554,8 @@ Eric Groo
 Daniel Andrade Groppe
 Dag Gruneau
 Filip Gruszczyński
+Andrii Grynenko
+Grzegorz Grzywacz
 Thomas Guettler
 Yuyang Guo
 Anuj Gupta
@@ -770,11 +775,13 @@ Lawrence Kesteloot
 Vivek Khera
 Dhiru Kholia
 Akshit Khurana
+Sanyam Khurana
 Mads Kiilerich
 Jason Killen
 Jan Kim
 Taek Joo Kim
 Sam Kimbrel
+Tomohiko Kinebuchi
 James King
 W. Trevor King
 Paul Kippes
@@ -958,6 +965,7 @@ David Marek
 Doug Marien
 Sven Marnach
 Alex Martelli
+Dennis Mårtensson
 Anthony Martin
 Owen Martin
 Sidney San Martín
@@ -1058,6 +1066,7 @@ R. David Murray
 Matti Mäki
 Jörg Müller
 Kaushik N
+Dong-hee Na
 Dale Nagata
 John Nagle
 Takahiro Nakayama
@@ -1072,6 +1081,7 @@ Max Neunhöffer
 Anthon van der Neut
 George Neville-Neil
 Hieu Nguyen
+Nam Nguyen
 Johannes Nicolai
 Samuel Nicolary
 Jonathan Niehof
@@ -1103,6 +1113,7 @@ Milan Oberkirch
 Pascal Oberndoerfer
 Jeffrey Ollie
 Adam Olsen
+Bryan Olson
 Grant Olson
 Koray Oner
 Piet van Oostrum
@@ -1111,7 +1122,9 @@ Jason Orendorff
 Douglas Orr
 William Orr
 Michele Orrù
+Tomáš Orsava
 Oleg Oshmyan
+Denis Osipov
 Denis S. Otkidach
 Peter Otten
 Michael Otteneder
@@ -1181,6 +1194,7 @@ Steve Piercy
 Jim St. Pierre
 Dan Pierson
 Martijn Pieters
+Antoine Pietri
 Anand B. Pillai
 François Pinard
 Tom Pinckney
@@ -1371,6 +1385,7 @@ Federico Schwindt
 Barry Scott
 Steven Scott
 Nick Seidenman
+Michael Seifert
 Žiga Seilnacht
 Yury Selivanov
 Fred Sells
@@ -1471,6 +1486,7 @@ Daniel Stokes
 Michael Stone
 Serhiy Storchaka
 Ken Stox
+Charalampos Stratakis
 Dan Stromberg
 Donald Stufft
 Daniel Stutzbach
@@ -1650,6 +1666,7 @@ Jakub Wilk
 Gerald S. Williams
 Jason Williams
 John Williams
+Roy Williams
 Sue Williams
 Carol Willing
 Steven Willis
@@ -1708,6 +1725,7 @@ Artur Zaprzala
 Mike Zarnstorff
 Yury V. Zaytsev
 Siebren van der Zee
+Christophe Zeitouny
 Nickolai Zeldovich
 Yuxiao Zeng
 Uwe Zessin
