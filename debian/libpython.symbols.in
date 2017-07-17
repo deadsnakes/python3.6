@@ -1194,6 +1194,7 @@
  _PyEval_SetSwitchInterval@Base @SVER@
  _PyEval_SignalAsyncExc@Base @SVER@
  _PyEval_SliceIndex@Base @SVER@
+ _PyEval_SliceIndexNotNone@Base 3.6.2
  _PyExc_Fini@Base @SVER@
  _PyExc_Init@Base @SVER@
  _PyFaulthandler_Fini@Base @SVER@
@@ -1751,6 +1752,7 @@
  _Py_write@Base @SVER@
  _Py_write_noraise@Base @SVER@
  _Py_zfill__doc__@Base @SVER@
+ __PyCodeExtraState_Get@Base 3.6.2
 
  (optional|regex)"^_ctypes_.*@Base$" @SVER@
  (optional|regex)"^ffi_type_.*@Base$" @SVER@
