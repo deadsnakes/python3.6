@@ -305,6 +305,8 @@ future_add_done_callback(FutureObj *fut, PyObject *arg)
 static PyObject *
 future_cancel(FutureObj *fut)
 {
+    fut->fut_log_tb = 0;
+
     if (fut->fut_state != STATE_PENDING) {
         Py_RETURN_FALSE;
     }
@@ -638,6 +640,17 @@ FutureObj_get_log_traceback(FutureObj *fut)
     }
 }
 
+static int
+FutureObj_set_log_traceback(FutureObj *fut, PyObject *val)
+{
+    int is_true = PyObject_IsTrue(val);
+    if (is_true < 0) {
+        return -1;
+    }
+    fut->fut_log_tb = is_true;
+    return 0;
+}
+
 static PyObject *
 FutureObj_get_loop(FutureObj *fut)
 {
@@ -882,7 +895,8 @@ static PyMethodDef FutureType_methods[] = {
     {"_callbacks", (getter)FutureObj_get_callbacks, NULL, NULL},              \
     {"_result", (getter)FutureObj_get_result, NULL, NULL},                    \
     {"_exception", (getter)FutureObj_get_exception, NULL, NULL},              \
-    {"_log_traceback", (getter)FutureObj_get_log_traceback, NULL, NULL},      \
+    {"_log_traceback", (getter)FutureObj_get_log_traceback,                   \
+                       (setter)FutureObj_set_log_traceback, NULL},            \
     {"_source_traceback", (getter)FutureObj_get_source_traceback, NULL, NULL},
 
 static PyGetSetDef FutureType_getsetlist[] = {
@@ -1568,6 +1582,8 @@ static PyObject *
 _asyncio_Task_cancel_impl(TaskObj *self)
 /*[clinic end generated code: output=6bfc0479da9d5757 input=13f9bf496695cb52]*/
 {
+    self->task_log_tb = 0;
+
     if (self->task_state != STATE_PENDING) {
         Py_RETURN_FALSE;
     }
@@ -1984,6 +2000,16 @@ task_step_impl(TaskObj *task, PyObject *exc)
         if (_PyGen_FetchStopIterationValue(&o) == 0) {
             /* The error is StopIteration and that means that
                the underlying coroutine has resolved */
+            if (task->task_must_cancel) {
+                // Task is cancelled right before coro stops.
+                Py_DECREF(o);
+                task->task_must_cancel = 0;
+                et = asyncio_CancelledError;
+                Py_INCREF(et);
+                ev = NULL;
+                tb = NULL;
+                goto set_exception;
+            }
             PyObject *res = future_set_result((FutureObj*)task, o);
             Py_DECREF(o);
             if (res == NULL) {
@@ -2001,6 +2027,8 @@ task_step_impl(TaskObj *task, PyObject *exc)
 
         /* Some other exception; pop it and call Task.set_exception() */
         PyErr_Fetch(&et, &ev, &tb);
+
+set_exception:
         assert(et);
         if (!ev || !PyObject_TypeCheck(ev, (PyTypeObject *) et)) {
             PyErr_NormalizeException(&et, &ev, &tb);
