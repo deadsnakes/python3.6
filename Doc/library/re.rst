@@ -784,11 +784,22 @@ form.
       Unmatched groups are replaced with an empty string.
 
 
-.. function:: escape(string)
+.. function:: escape(pattern)
 
-   Escape all the characters in pattern except ASCII letters, numbers and ``'_'``.
+   Escape all the characters in *pattern* except ASCII letters, numbers and ``'_'``.
    This is useful if you want to match an arbitrary literal string that may
-   have regular expression metacharacters in it.
+   have regular expression metacharacters in it.  For example::
+
+      >>> print(re.escape('python.exe'))
+      python\.exe
+
+      >>> legal_chars = string.ascii_lowercase + string.digits + "!#$%&'*+-.^_`|~:"
+      >>> print('[%s]+' % re.escape(legal_chars))
+      [abcdefghijklmnopqrstuvwxyz0123456789\!\#\$\%\&\'\*\+\-\.\^_\`\|\~\:]+
+
+      >>> operators = ['+', '-', '*', '/', '**']
+      >>> print('|'.join(map(re.escape, sorted(operators, reverse=True))))
+      \/|\-|\+|\*\*|\*
 
    .. versionchanged:: 3.3
       The ``'_'`` character is no longer escaped.
@@ -817,15 +828,15 @@ form.
 
    .. attribute:: pos
 
-      The index of *pattern* where compilation failed.
+      The index in *pattern* where compilation failed (may be ``None``).
 
    .. attribute:: lineno
 
-      The line corresponding to *pos*.
+      The line corresponding to *pos* (may be ``None``).
 
    .. attribute:: colno
 
-      The column corresponding to *pos*.
+      The column corresponding to *pos* (may be ``None``).
 
    .. versionchanged:: 3.5
       Added additional attributes.

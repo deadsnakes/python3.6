@@ -154,10 +154,10 @@ index 0ddc736..0a71b61 100644
          self.outputs = [self.target]
  
 diff --git a/Lib/distutils/sysconfig.py b/Lib/distutils/sysconfig.py
-index 8bf1a70..6785c95 100644
+index 2bcd1dd..76689dd 100644
 --- a/Lib/distutils/sysconfig.py
 +++ b/Lib/distutils/sysconfig.py
-@@ -125,6 +125,7 @@ def get_python_lib(plat_specific=0, standard_lib=0, prefix=None):
+@@ -122,6 +122,7 @@ def get_python_lib(plat_specific=0, standard_lib=0, prefix=None):
      If 'prefix' is supplied, use it instead of sys.base_prefix or
      sys.base_exec_prefix -- i.e., ignore 'plat_specific'.
      """
@@ -165,7 +165,7 @@ index 8bf1a70..6785c95 100644
      if prefix is None:
          if standard_lib:
              prefix = plat_specific and BASE_EXEC_PREFIX or BASE_PREFIX
-@@ -136,6 +137,12 @@ def get_python_lib(plat_specific=0, standard_lib=0, prefix=None):
+@@ -133,6 +134,12 @@ def get_python_lib(plat_specific=0, standard_lib=0, prefix=None):
                                   "lib", "python" + get_python_version())
          if standard_lib:
              return libpython
@@ -273,10 +273,10 @@ index 0fc9200..98c2a4c 100644
              sitepackages.append(prefix)
              sitepackages.append(os.path.join(prefix, "lib", "site-packages"))
 diff --git a/Lib/test/test_site.py b/Lib/test/test_site.py
-index 0620b24..bf08e3a 100644
+index 4029617..33e87bb 100644
 --- a/Lib/test/test_site.py
 +++ b/Lib/test/test_site.py
-@@ -247,10 +247,10 @@ class HelperFunctionsTests(unittest.TestCase):
+@@ -260,10 +260,10 @@ class HelperFunctionsTests(unittest.TestCase):
              self.assertEqual(dirs[1], wanted)
          elif os.sep == '/':
              # OS X non-framwework builds, Linux, FreeBSD, etc
