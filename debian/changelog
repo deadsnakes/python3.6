@@ -1,8 +1,9 @@
 python3.6 (3.6.2-1+trusty1) trusty; urgency=medium
 
+  [ Anthony Sottile ]
   * Python 3.6.2 release.
 
- -- Anthony Sottile <asottile@umich.edu>  Mon, 17 Jul 2017 17:20:56 -0700
+ -- Felix Krull <f_krull@gmx.de>  Mon, 17 Jul 2017 17:20:56 -0700
 
 python3.6 (3.6.1-1+trusty1) trusty; urgency=medium
 
