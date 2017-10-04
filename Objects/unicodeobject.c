@@ -1779,6 +1779,7 @@ unicode_dealloc(PyObject *unicode)
 
     case SSTATE_INTERNED_IMMORTAL:
         Py_FatalError("Immortal interned string died.");
+        /* fall through */
 
     default:
         Py_FatalError("Inconsistent interned string state.");
@@ -3017,6 +3018,37 @@ PyUnicode_AsWideCharString(PyObject *unicode,
     return buffer;
 }
 
+wchar_t*
+_PyUnicode_AsWideCharString(PyObject *unicode)
+{
+    const wchar_t *wstr;
+    wchar_t *buffer;
+    Py_ssize_t buflen;
+
+    if (unicode == NULL) {
+        PyErr_BadInternalCall();
+        return NULL;
+    }
+
+    wstr = PyUnicode_AsUnicodeAndSize(unicode, &buflen);
+    if (wstr == NULL) {
+        return NULL;
+    }
+    if (wcslen(wstr) != (size_t)buflen) {
+        PyErr_SetString(PyExc_ValueError,
+                        "embedded null character");
+        return NULL;
+    }
+
+    buffer = PyMem_NEW(wchar_t, buflen + 1);
+    if (buffer == NULL) {
+        PyErr_NoMemory();
+        return NULL;
+    }
+    memcpy(buffer, wstr, (buflen + 1) * sizeof(wchar_t));
+    return buffer;
+}
+
 #endif /* HAVE_WCHAR_H */
 
 PyObject *
@@ -4133,6 +4165,20 @@ PyUnicode_AsUnicode(PyObject *unicode)
     return PyUnicode_AsUnicodeAndSize(unicode, NULL);
 }
 
+const Py_UNICODE *
+_PyUnicode_AsUnicode(PyObject *unicode)
+{
+    Py_ssize_t size;
+    const Py_UNICODE *wstr;
+
+    wstr = PyUnicode_AsUnicodeAndSize(unicode, &size);
+    if (wstr && wcslen(wstr) != (size_t)size) {
+        PyErr_SetString(PyExc_ValueError, "embedded null character");
+        return NULL;
+    }
+    return wstr;
+}
+
 
 Py_ssize_t
 PyUnicode_GetSize(PyObject *unicode)
@@ -4165,8 +4211,11 @@ PyUnicode_ReadChar(PyObject *unicode, Py_ssize_t index)
     void *data;
     int kind;
 
-    if (!PyUnicode_Check(unicode) || PyUnicode_READY(unicode) == -1) {
+    if (!PyUnicode_Check(unicode)) {
         PyErr_BadArgument();
+        return (Py_UCS4)-1;
+    }
+    if (PyUnicode_READY(unicode) == -1) {
         return (Py_UCS4)-1;
     }
     if (index < 0 || index >= PyUnicode_GET_LENGTH(unicode)) {
@@ -5468,13 +5517,12 @@ _PyUnicode_EncodeUTF32(PyObject *str,
         /* four bytes are reserved for each surrogate */
         if (moreunits > 1) {
             Py_ssize_t outpos = out - (uint32_t*) PyBytes_AS_STRING(v);
-            Py_ssize_t morebytes = 4 * (moreunits - 1);
-            if (PyBytes_GET_SIZE(v) > PY_SSIZE_T_MAX - morebytes) {
+            if (moreunits >= (PY_SSIZE_T_MAX - PyBytes_GET_SIZE(v)) / 4) {
                 /* integer overflow */
                 PyErr_NoMemory();
                 goto error;
             }
-            if (_PyBytes_Resize(&v, PyBytes_GET_SIZE(v) + morebytes) < 0)
+            if (_PyBytes_Resize(&v, PyBytes_GET_SIZE(v) + 4 * (moreunits - 1)) < 0)
                 goto error;
             out = (uint32_t*) PyBytes_AS_STRING(v) + outpos;
         }
@@ -5820,13 +5868,12 @@ _PyUnicode_EncodeUTF16(PyObject *str,
         /* two bytes are reserved for each surrogate */
         if (moreunits > 1) {
             Py_ssize_t outpos = out - (unsigned short*) PyBytes_AS_STRING(v);
-            Py_ssize_t morebytes = 2 * (moreunits - 1);
-            if (PyBytes_GET_SIZE(v) > PY_SSIZE_T_MAX - morebytes) {
+            if (moreunits >= (PY_SSIZE_T_MAX - PyBytes_GET_SIZE(v)) / 2) {
                 /* integer overflow */
                 PyErr_NoMemory();
                 goto error;
             }
-            if (_PyBytes_Resize(&v, PyBytes_GET_SIZE(v) + morebytes) < 0)
+            if (_PyBytes_Resize(&v, PyBytes_GET_SIZE(v) + 2 * (moreunits - 1)) < 0)
                 goto error;
             out = (unsigned short*) PyBytes_AS_STRING(v) + outpos;
         }
@@ -6506,6 +6553,10 @@ _PyUnicode_DecodeUnicodeInternal(const char *s,
                      1))
         return NULL;
 
+    if (size < 0) {
+        PyErr_BadInternalCall();
+        return NULL;
+    }
     if (size == 0)
         _Py_RETURN_UNICODE_EMPTY();
 
@@ -6766,7 +6817,7 @@ unicode_encode_ucs1(PyObject *unicode,
             case _Py_ERROR_REPLACE:
                 memset(str, '?', collend - collstart);
                 str += (collend - collstart);
-                /* fall through ignore error handler */
+                /* fall through */
             case _Py_ERROR_IGNORE:
                 pos = collend;
                 break;
@@ -6805,7 +6856,7 @@ unicode_encode_ucs1(PyObject *unicode,
                     break;
                 collstart = pos;
                 assert(collstart != collend);
-                /* fallback to general error handling */
+                /* fall through */
 
             default:
                 rep = unicode_encode_call_errorhandler(errors, &error_handler_obj,
@@ -7305,6 +7356,10 @@ decode_code_page_stateful(int code_page,
 
     if (code_page < 0) {
         PyErr_SetString(PyExc_ValueError, "invalid code page number");
+        return NULL;
+    }
+    if (size < 0) {
+        PyErr_BadInternalCall();
         return NULL;
     }
 
@@ -11655,8 +11710,11 @@ unicode_getitem(PyObject *self, Py_ssize_t index)
     enum PyUnicode_Kind kind;
     Py_UCS4 ch;
 
-    if (!PyUnicode_Check(self) || PyUnicode_READY(self) == -1) {
+    if (!PyUnicode_Check(self)) {
         PyErr_BadArgument();
+        return NULL;
+    }
+    if (PyUnicode_READY(self) == -1) {
         return NULL;
     }
     if (index < 0 || index >= PyUnicode_GET_LENGTH(self)) {

@@ -836,6 +836,30 @@ class EnvironTests(mapping_tests.BasicTestMappingProtocol):
         self.assertIs(cm.exception.args[0], missing)
         self.assertTrue(cm.exception.__suppress_context__)
 
+    def _test_environ_iteration(self, collection):
+        iterator = iter(collection)
+        new_key = "__new_key__"
+
+        next(iterator)  # start iteration over os.environ.items
+
+        # add a new key in os.environ mapping
+        os.environ[new_key] = "test_environ_iteration"
+
+        try:
+            next(iterator)  # force iteration over modified mapping
+            self.assertEqual(os.environ[new_key], "test_environ_iteration")
+        finally:
+            del os.environ[new_key]
+
+    def test_iter_error_when_changing_os_environ(self):
+        self._test_environ_iteration(os.environ)
+
+    def test_iter_error_when_changing_os_environ_items(self):
+        self._test_environ_iteration(os.environ.items())
+
+    def test_iter_error_when_changing_os_environ_values(self):
+        self._test_environ_iteration(os.environ.values())
+
 
 class WalkTests(unittest.TestCase):
     """Tests for os.walk()."""
@@ -1552,6 +1576,27 @@ class ExecTests(unittest.TestCase):
         self._test_internal_execvpe(str)
         if os.name != "nt":
             self._test_internal_execvpe(bytes)
+
+    def test_execve_invalid_env(self):
+        args = [sys.executable, '-c', 'pass']
+
+        # null character in the enviroment variable name
+        newenv = os.environ.copy()
+        newenv["FRUIT\0VEGETABLE"] = "cabbage"
+        with self.assertRaises(ValueError):
+            os.execve(args[0], args, newenv)
+
+        # null character in the enviroment variable value
+        newenv = os.environ.copy()
+        newenv["FRUIT"] = "orange\0VEGETABLE=cabbage"
+        with self.assertRaises(ValueError):
+            os.execve(args[0], args, newenv)
+
+        # equal character in the enviroment variable name
+        newenv = os.environ.copy()
+        newenv["FRUIT=ORANGE"] = "lemon"
+        with self.assertRaises(ValueError):
+            os.execve(args[0], args, newenv)
 
 
 @unittest.skipUnless(sys.platform == "win32", "Win32 specific tests")
@@ -2364,6 +2409,61 @@ class SpawnTests(unittest.TestCase):
         self.assertRaises(ValueError, os.spawnve, os.P_NOWAIT, args[0], ('',), {})
         self.assertRaises(ValueError, os.spawnve, os.P_NOWAIT, args[0], [''], {})
 
+    def _test_invalid_env(self, spawn):
+        args = [sys.executable, '-c', 'pass']
+
+        # null character in the enviroment variable name
+        newenv = os.environ.copy()
+        newenv["FRUIT\0VEGETABLE"] = "cabbage"
+        try:
+            exitcode = spawn(os.P_WAIT, args[0], args, newenv)
+        except ValueError:
+            pass
+        else:
+            self.assertEqual(exitcode, 127)
+
+        # null character in the enviroment variable value
+        newenv = os.environ.copy()
+        newenv["FRUIT"] = "orange\0VEGETABLE=cabbage"
+        try:
+            exitcode = spawn(os.P_WAIT, args[0], args, newenv)
+        except ValueError:
+            pass
+        else:
+            self.assertEqual(exitcode, 127)
+
+        # equal character in the enviroment variable name
+        newenv = os.environ.copy()
+        newenv["FRUIT=ORANGE"] = "lemon"
+        try:
+            exitcode = spawn(os.P_WAIT, args[0], args, newenv)
+        except ValueError:
+            pass
+        else:
+            self.assertEqual(exitcode, 127)
+
+        # equal character in the enviroment variable value
+        filename = support.TESTFN
+        self.addCleanup(support.unlink, filename)
+        with open(filename, "w") as fp:
+            fp.write('import sys, os\n'
+                     'if os.getenv("FRUIT") != "orange=lemon":\n'
+                     '    raise AssertionError')
+        args = [sys.executable, filename]
+        newenv = os.environ.copy()
+        newenv["FRUIT"] = "orange=lemon"
+        exitcode = spawn(os.P_WAIT, args[0], args, newenv)
+        self.assertEqual(exitcode, 0)
+
+    @requires_os_func('spawnve')
+    def test_spawnve_invalid_env(self):
+        self._test_invalid_env(os.spawnve)
+
+    @requires_os_func('spawnvpe')
+    def test_spawnvpe_invalid_env(self):
+        self._test_invalid_env(os.spawnvpe)
+
+
 # The introduction of this TestCase caused at least two different errors on
 # *nix buildbots. Temporarily skip this to let the buildbots move along.
 @unittest.skip("Skip due to platform/environment differences on *NIX buildbots")
@@ -2521,6 +2621,7 @@ class TestSendfile(unittest.TestCase):
         self.client.close()
         if self.server.running:
             self.server.stop()
+        self.server = None
 
     def sendfile_wrapper(self, sock, file, offset, nbytes, headers=[], trailers=[]):
         """A higher level wrapper representing how an application is
@@ -3301,6 +3402,22 @@ class TestScandir(unittest.TestCase):
         self.assertEqual(entry.name, b'file.txt')
         self.assertEqual(entry.path,
                          os.fsencode(os.path.join(self.path, 'file.txt')))
+
+    def test_bytes_like(self):
+        self.create_file("file.txt")
+
+        for cls in bytearray, memoryview:
+            path_bytes = cls(os.fsencode(self.path))
+            with self.assertWarns(DeprecationWarning):
+                entries = list(os.scandir(path_bytes))
+            self.assertEqual(len(entries), 1, entries)
+            entry = entries[0]
+
+            self.assertEqual(entry.name, b'file.txt')
+            self.assertEqual(entry.path,
+                             os.fsencode(os.path.join(self.path, 'file.txt')))
+            self.assertIs(type(entry.name), bytes)
+            self.assertIs(type(entry.path), bytes)
 
     def test_empty_path(self):
         self.assertRaises(FileNotFoundError, os.scandir, '')
