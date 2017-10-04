@@ -1370,7 +1370,7 @@
  _PyParser_TokenNames@Base @SVER@
  _PyRandom_Fini@Base @SVER@
  _PyRandom_Init@Base @SVER@
- _PySHA3_KeccakF1600_FastLoop_Absorb@Base 3.6.3
+ (optional)_PySHA3_KeccakF1600_FastLoop_Absorb@Base 3.6.3
  _PySHA3_KeccakP1600_AddBytes@Base 3.6.3
  _PySHA3_KeccakP1600_AddBytesInLane@Base 3.6.3
  _PySHA3_KeccakP1600_AddLanes@Base 3.6.3
@@ -1387,6 +1387,8 @@
  _PySHA3_KeccakP1600_OverwriteWithZeroes@Base 3.6.3
  _PySHA3_KeccakP1600_Permute_12rounds@Base 3.6.3
  _PySHA3_KeccakP1600_Permute_24rounds@Base 3.6.3
+ (optional)_PySHA3_KeccakP1600_Permute_Nrounds@Base 3.6.3
+ (optional)_PySHA3_KeccakP1600_SetBytesInLaneToZero@Base 3.6.3
  _PySHA3_KeccakWidth1600_Sponge@Base 3.6.3
  _PySHA3_KeccakWidth1600_SpongeAbsorb@Base 3.6.3
  _PySHA3_KeccakWidth1600_SpongeAbsorbLastFewBits@Base 3.6.3
