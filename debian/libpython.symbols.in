@@ -1193,6 +1193,7 @@
  _PyEval_SetAsyncGenFirstiter@Base @SVER@
  _PyEval_SetSwitchInterval@Base @SVER@
  _PyEval_SignalAsyncExc@Base @SVER@
+ _PyEval_SignalReceived@Base 3.6.3
  _PyEval_SliceIndex@Base @SVER@
  _PyEval_SliceIndexNotNone@Base 3.6.2
  _PyExc_Fini@Base @SVER@
@@ -1369,6 +1370,34 @@
  _PyParser_TokenNames@Base @SVER@
  _PyRandom_Fini@Base @SVER@
  _PyRandom_Init@Base @SVER@
+ (optional)_PySHA3_KeccakF1600_FastLoop_Absorb@Base 3.6.3
+ _PySHA3_KeccakP1600_AddBytes@Base 3.6.3
+ _PySHA3_KeccakP1600_AddBytesInLane@Base 3.6.3
+ _PySHA3_KeccakP1600_AddLanes@Base 3.6.3
+ _PySHA3_KeccakP1600_ExtractAndAddBytes@Base 3.6.3
+ _PySHA3_KeccakP1600_ExtractAndAddBytesInLane@Base 3.6.3
+ _PySHA3_KeccakP1600_ExtractAndAddLanes@Base 3.6.3
+ _PySHA3_KeccakP1600_ExtractBytes@Base 3.6.3
+ _PySHA3_KeccakP1600_ExtractBytesInLane@Base 3.6.3
+ _PySHA3_KeccakP1600_ExtractLanes@Base 3.6.3
+ _PySHA3_KeccakP1600_Initialize@Base 3.6.3
+ _PySHA3_KeccakP1600_OverwriteBytes@Base 3.6.3
+ _PySHA3_KeccakP1600_OverwriteBytesInLane@Base 3.6.3
+ _PySHA3_KeccakP1600_OverwriteLanes@Base 3.6.3
+ _PySHA3_KeccakP1600_OverwriteWithZeroes@Base 3.6.3
+ _PySHA3_KeccakP1600_Permute_12rounds@Base 3.6.3
+ _PySHA3_KeccakP1600_Permute_24rounds@Base 3.6.3
+ (optional)_PySHA3_KeccakP1600_Permute_Nrounds@Base 3.6.3
+ (optional)_PySHA3_KeccakP1600_SetBytesInLaneToZero@Base 3.6.3
+ _PySHA3_KeccakWidth1600_Sponge@Base 3.6.3
+ _PySHA3_KeccakWidth1600_SpongeAbsorb@Base 3.6.3
+ _PySHA3_KeccakWidth1600_SpongeAbsorbLastFewBits@Base 3.6.3
+ _PySHA3_KeccakWidth1600_SpongeInitialize@Base 3.6.3
+ _PySHA3_KeccakWidth1600_SpongeSqueeze@Base 3.6.3
+ _PySHA3_Keccak_HashFinal@Base 3.6.3
+ _PySHA3_Keccak_HashInitialize@Base 3.6.3
+ _PySHA3_Keccak_HashSqueeze@Base 3.6.3
+ _PySHA3_Keccak_HashUpdate@Base 3.6.3
  _PySequence_BytesToCharpArray@Base @SVER@
  _PySequence_IterSearch@Base @SVER@
  _PySet_Dummy@Base @SVER@
@@ -1453,6 +1482,8 @@
  _PyUnicode_AsKind@Base @SVER@
  _PyUnicode_AsLatin1String@Base @SVER@
  _PyUnicode_AsUTF8String@Base @SVER@
+ _PyUnicode_AsUnicode@Base 3.6.3
+ _PyUnicode_AsWideCharString@Base 3.6.3
  _PyUnicode_BidirectionalNames@Base @SVER@
  _PyUnicode_CategoryNames@Base @SVER@
  _PyUnicode_ClearStaticStrings@Base @SVER@

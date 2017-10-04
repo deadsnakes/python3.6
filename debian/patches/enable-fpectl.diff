@@ -8,7 +8,7 @@ Subject: enable-fpectl
  1 file changed, 6 insertions(+)
 
 diff --git a/setup.py b/setup.py
-index 7c9cc0d..0bf9a9e 100644
+index e64df99..bbac680 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -1400,6 +1400,12 @@ class PyBuildExt(build_ext):

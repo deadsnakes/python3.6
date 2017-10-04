@@ -8,7 +8,7 @@ Subject: pyhash
  1 file changed, 18 insertions(+), 14 deletions(-)
 
 diff --git a/Python/pyhash.c b/Python/pyhash.c
-index 57a2da7..087f84f 100644
+index a2ec230..b1fd87d 100644
 --- a/Python/pyhash.c
 +++ b/Python/pyhash.c
 @@ -328,13 +328,14 @@ static PyHash_FuncDef PyHash_Func = {fnv, "fnv", 8 * SIZEOF_PY_HASH_T,
@@ -65,8 +65,8 @@ index 57a2da7..087f84f 100644
          src_sz -= 8;
          v3 ^= mi;
 @@ -401,7 +404,8 @@ siphash24(const void *src, Py_ssize_t src_sz) {
-         case 2: pt[1] = m[1];
-         case 1: pt[0] = m[0];
+         case 2: pt[1] = m[1]; /* fall through */
+         case 1: pt[0] = m[0]; /* fall through */
      }
 -    b |= _le64toh(t);
 +    _le64toh(t2, t);
