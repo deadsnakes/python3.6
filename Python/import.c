@@ -1345,7 +1345,6 @@ resolve_name(PyObject *name, PyObject *globals, int level)
     PyObject *abs_name;
     PyObject *package = NULL;
     PyObject *spec;
-    PyInterpreterState *interp = PyThreadState_GET()->interp;
     Py_ssize_t last_dot;
     PyObject *base;
     int level_up;
@@ -1449,12 +1448,6 @@ resolve_name(PyObject *name, PyObject *globals, int level)
                 "attempted relative import with no known parent package");
         goto error;
     }
-    else if (PyDict_GetItem(interp->modules, package) == NULL) {
-        PyErr_Format(PyExc_SystemError,
-                "Parent module %R not loaded, cannot perform relative "
-                "import", package);
-        goto error;
-    }
 
     for (level_up = 1; level_up < level; level_up += 1) {
         last_dot = PyUnicode_FindChar(package, '.', 0, last_dot, -1);
@@ -1533,18 +1526,7 @@ PyImport_ImportModuleLevelObject(PyObject *name, PyObject *globals,
     }
 
     mod = PyDict_GetItem(interp->modules, abs_name);
-    if (mod == Py_None) {
-        PyObject *msg = PyUnicode_FromFormat("import of %R halted; "
-                                             "None in sys.modules", abs_name);
-        if (msg != NULL) {
-            PyErr_SetImportErrorSubclass(PyExc_ModuleNotFoundError, msg,
-                    abs_name, NULL);
-            Py_DECREF(msg);
-        }
-        mod = NULL;
-        goto error;
-    }
-    else if (mod != NULL) {
+    if (mod != NULL && mod != Py_None) {
         _Py_IDENTIFIER(__spec__);
         _Py_IDENTIFIER(_initializing);
         _Py_IDENTIFIER(_lock_unlock_module);
@@ -1571,10 +1553,6 @@ PyImport_ImportModuleLevelObject(PyObject *name, PyObject *globals,
             if (initializing == -1)
                 PyErr_Clear();
             if (initializing > 0) {
-#ifdef WITH_THREAD
-                _PyImport_AcquireLock();
-#endif
-                /* _bootstrap._lock_unlock_module() releases the import lock */
                 value = _PyObject_CallMethodIdObjArgs(interp->importlib,
                                                 &PyId__lock_unlock_module, abs_name,
                                                 NULL);
@@ -1585,10 +1563,6 @@ PyImport_ImportModuleLevelObject(PyObject *name, PyObject *globals,
         }
     }
     else {
-#ifdef WITH_THREAD
-        _PyImport_AcquireLock();
-#endif
-        /* _bootstrap._find_and_load() releases the import lock */
         mod = _PyObject_CallMethodIdObjArgs(interp->importlib,
                                             &PyId__find_and_load, abs_name,
                                             interp->import_func, NULL);

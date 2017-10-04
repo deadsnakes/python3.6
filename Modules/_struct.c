@@ -1460,7 +1460,8 @@ s_init(PyObject *self, PyObject *args, PyObject *kwds)
     if (!PyBytes_Check(o_format)) {
         Py_DECREF(o_format);
         PyErr_Format(PyExc_TypeError,
-                     "Struct() argument 1 must be a bytes object, not %.200s",
+                     "Struct() argument 1 must be a str or bytes object, "
+                     "not %.200s",
                      Py_TYPE(o_format)->tp_name);
         return -1;
     }
@@ -1541,7 +1542,7 @@ s_unpack(PyObject *self, PyObject *input)
         return NULL;
     if (vbuf.len != soself->s_size) {
         PyErr_Format(StructError,
-                     "unpack requires a bytes object of length %zd",
+                     "unpack requires a buffer of %zd bytes",
                      soself->s_size);
         PyBuffer_Release(&vbuf);
         return NULL;
@@ -1605,6 +1606,8 @@ typedef struct {
 static void
 unpackiter_dealloc(unpackiterobject *self)
 {
+    /* bpo-31095: UnTrack is needed before calling any callbacks */
+    PyObject_GC_UnTrack(self);
     Py_XDECREF(self->so);
     PyBuffer_Release(&self->buf);
     PyObject_GC_Del(self);
@@ -1716,8 +1719,8 @@ s_iter_unpack(PyObject *_so, PyObject *input)
     }
     if (self->buf.len % so->s_size != 0) {
         PyErr_Format(StructError,
-                     "iterative unpacking requires a bytes length "
-                     "multiple of %zd",
+                     "iterative unpacking requires a buffer of "
+                     "a multiple of %zd bytes",
                      so->s_size);
         Py_DECREF(self);
         return NULL;

@@ -627,6 +627,7 @@ element_gc_clear(ElementObject *self)
 static void
 element_dealloc(ElementObject* self)
 {
+    /* bpo-31095: UnTrack is needed before calling any callbacks */
     PyObject_GC_UnTrack(self);
     Py_TRASHCAN_SAFE_BEGIN(self)
 
@@ -2048,6 +2049,8 @@ elementiter_dealloc(ElementIterObject *it)
 {
     Py_ssize_t i = it->parent_stack_used;
     it->parent_stack_used = 0;
+    /* bpo-31095: UnTrack is needed before calling any callbacks */
+    PyObject_GC_UnTrack(it);
     while (i--)
         Py_XDECREF(it->parent_stack[i].parent);
     PyMem_Free(it->parent_stack);
@@ -2055,7 +2058,6 @@ elementiter_dealloc(ElementIterObject *it)
     Py_XDECREF(it->sought_tag);
     Py_XDECREF(it->root_element);
 
-    PyObject_GC_UnTrack(it);
     PyObject_GC_Del(it);
 }
 
@@ -3222,6 +3224,18 @@ xmlparser_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     return (PyObject *)self;
 }
 
+static int
+ignore_attribute_error(PyObject *value)
+{
+    if (value == NULL) {
+        if (!PyErr_ExceptionMatches(PyExc_AttributeError)) {
+            return -1;
+        }
+        PyErr_Clear();
+    }
+    return 0;
+}
+
 /*[clinic input]
 _elementtree.XMLParser.__init__
 
@@ -3268,14 +3282,33 @@ _elementtree_XMLParser___init___impl(XMLParserObject *self, PyObject *html,
     self->target = target;
 
     self->handle_start = PyObject_GetAttrString(target, "start");
+    if (ignore_attribute_error(self->handle_start)) {
+        return -1;
+    }
     self->handle_data = PyObject_GetAttrString(target, "data");
+    if (ignore_attribute_error(self->handle_data)) {
+        return -1;
+    }
     self->handle_end = PyObject_GetAttrString(target, "end");
+    if (ignore_attribute_error(self->handle_end)) {
+        return -1;
+    }
     self->handle_comment = PyObject_GetAttrString(target, "comment");
+    if (ignore_attribute_error(self->handle_comment)) {
+        return -1;
+    }
     self->handle_pi = PyObject_GetAttrString(target, "pi");
+    if (ignore_attribute_error(self->handle_pi)) {
+        return -1;
+    }
     self->handle_close = PyObject_GetAttrString(target, "close");
+    if (ignore_attribute_error(self->handle_close)) {
+        return -1;
+    }
     self->handle_doctype = PyObject_GetAttrString(target, "doctype");
-
-    PyErr_Clear();
+    if (ignore_attribute_error(self->handle_doctype)) {
+        return -1;
+    }
 
     /* configure parser */
     EXPAT(SetUserData)(self->parser, self);
@@ -3334,7 +3367,11 @@ xmlparser_gc_traverse(XMLParserObject *self, visitproc visit, void *arg)
 static int
 xmlparser_gc_clear(XMLParserObject *self)
 {
-    EXPAT(ParserFree)(self->parser);
+    if (self->parser != NULL) {
+        XML_Parser parser = self->parser;
+        self->parser = NULL;
+        EXPAT(ParserFree)(parser);
+    }
 
     Py_CLEAR(self->handle_close);
     Py_CLEAR(self->handle_pi);
@@ -3947,6 +3984,11 @@ PyInit__elementtree(void)
     st->deepcopy_obj = PyObject_GetAttrString(temp, "deepcopy");
     Py_XDECREF(temp);
 
+    if (st->deepcopy_obj == NULL) {
+        return NULL;
+    }
+
+    assert(!PyErr_Occurred());
     if (!(st->elementpath_obj = PyImport_ImportModule("xml.etree.ElementPath")))
         return NULL;
 

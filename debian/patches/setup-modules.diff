@@ -8,7 +8,7 @@ Subject: setup-modules
  1 file changed, 5 insertions(+), 6 deletions(-)
 
 diff --git a/Modules/Setup.dist b/Modules/Setup.dist
-index 8b87fc8..fedf9b1 100644
+index 735bacb..6e7b2ce 100644
 --- a/Modules/Setup.dist
 +++ b/Modules/Setup.dist
 @@ -176,7 +176,7 @@ _symtable symtablemodule.c
@@ -40,7 +40,7 @@ index 8b87fc8..fedf9b1 100644
  
  # The _sha module implements the SHA checksum algorithms.
  # (NIST's Secure Hash Algorithms.)
-@@ -341,6 +339,7 @@ _symtable symtablemodule.c
+@@ -342,6 +340,7 @@ _symtable symtablemodule.c
  # Fred Drake's interface to the Python parser
  #parser parsermodule.c
  
@@ -48,7 +48,7 @@ index 8b87fc8..fedf9b1 100644
  
  # Lee Busby's SIGFPE modules.
  # The library to link fpectl with is platform specific.
-@@ -375,7 +374,7 @@ _symtable symtablemodule.c
+@@ -376,7 +375,7 @@ _symtable symtablemodule.c
  #
  # More information on Expat can be found at www.libexpat.org.
  #
