@@ -5,8 +5,6 @@ echo.%~nx0 [flags and arguments] [quoted MSBuild options]
 echo.
 echo.Build CPython from the command line.  Requires the appropriate
 echo.version(s) of Microsoft Visual Studio to be installed (see readme.txt).
-echo.Also requires Subversion (svn.exe) to be on PATH if the '-e' flag is
-echo.given.
 echo.
 echo.After the flags recognized by this script, up to 9 arguments to be passed
 echo.directly to MSBuild may be passed.  If the argument contains an '=', the
@@ -79,7 +77,7 @@ if "%~1"=="-e" (set IncludeExternals=true) & shift & goto CheckOpts
 if "%~1"=="--no-ssl" (set IncludeSSL=false) & shift & goto CheckOpts
 if "%~1"=="--no-tkinter" (set IncludeTkinter=false) & shift & goto CheckOpts
 
-if "%IncludeExternals%"=="" set IncludeExternals=false
+if "%IncludeExternals%"=="" set IncludeExternals=true
 if "%IncludeSSL%"=="" set IncludeSSL=true
 if "%IncludeTkinter%"=="" set IncludeTkinter=true
 
@@ -106,7 +104,7 @@ if "%kill%"=="true" call :Kill
 
 if "%do_pgo%"=="true" (
     set conf=PGInstrument
-    call :Build
+    call :Build %1 %2 %3 %4 %5 %6 %7 %8 %9
     del /s "%dir%\*.pgc"
     del /s "%dir%\..\Lib\*.pyc"
     echo on

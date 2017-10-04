@@ -1898,6 +1898,23 @@ def _run_suite(suite):
         raise TestFailed(err)
 
 
+def _match_test(test):
+    global match_tests
+
+    if match_tests is None:
+        return True
+    test_id = test.id()
+
+    for match_test in match_tests:
+        if fnmatch.fnmatchcase(test_id, match_test):
+            return True
+
+        for name in test_id.split("."):
+            if fnmatch.fnmatchcase(name, match_test):
+                return True
+    return False
+
+
 def run_unittest(*classes):
     """Run tests from unittest.TestCase-derived classes."""
     valid_types = (unittest.TestSuite, unittest.TestCase)
@@ -1912,20 +1929,7 @@ def run_unittest(*classes):
             suite.addTest(cls)
         else:
             suite.addTest(unittest.makeSuite(cls))
-    def case_pred(test):
-        if match_tests is None:
-            return True
-        test_id = test.id()
-
-        for match_test in match_tests:
-            if fnmatch.fnmatchcase(test_id, match_test):
-                return True
-
-            for name in test_id.split("."):
-                if fnmatch.fnmatchcase(name, match_test):
-                    return True
-        return False
-    _filter_suite(suite, case_pred)
+    _filter_suite(suite, _match_test)
     _run_suite(suite)
 
 #=======================================================================
@@ -2049,7 +2053,6 @@ def reap_children():
     stick around to hog resources and create problems when looking
     for refleaks.
     """
-
     # Reap all our dead child processes so we don't leave zombies around.
     # These hog resources and might be causing some of the buildbots to die.
     if hasattr(os, 'waitpid'):
@@ -2060,6 +2063,8 @@ def reap_children():
                 pid, status = os.waitpid(any_process, os.WNOHANG)
                 if pid == 0:
                     break
+                print("Warning -- reap_children() reaped child process %s"
+                      % pid, file=sys.stderr)
             except:
                 break
 
