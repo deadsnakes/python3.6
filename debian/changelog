@@ -1,3 +1,9 @@
+python3.6 (3.6.3-1+xenial2) xenial; urgency=medium
+
+  * Make some symbols optional for i386
+
+ -- Anthony Sottile <asottile@umich.edu>  Tue, 03 Oct 2017 19:55:45 -0700
+
 python3.6 (3.6.3-1+xenial1) xenial; urgency=medium
 
   * Python 3.6.3 release
