@@ -201,7 +201,6 @@ ifneq (,$(findstring noopt, $(DEB_BUILD_OPTIONS)))
     with_lto =
 endif
 
-    with_pgo =
     with_lto =
 
 ifeq ($(with_lto),yes)
@@ -295,9 +294,7 @@ PROFILE_EXCLUDES += \
 
 # FIXME: update profiled-build.diff to support --next
 #       --next=20
-PROFILE_TASK = ../Lib/test/regrtest.py \
-	-s \
-	-j 1 -unone,decimal \
+PROFILE_TASK = -m test.regrtest --pgo \
 	-x $(sort $(TEST_EXCLUDES) $(PROFILE_EXCLUDES))
 
 stamps/stamp-build-static: stamps/stamp-configure-static
@@ -347,6 +344,7 @@ common_configure_args = \
 		--prefix=/usr \
 		--enable-ipv6 \
 		--enable-loadable-sqlite-extensions \
+		--enable-optimizations \
 		--with-dbmliborder=bdb:gdbm \
 		--with-computed-gotos \
 		--without-ensurepip \
