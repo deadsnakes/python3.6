@@ -2021,7 +2021,7 @@ class TestSignatureObject(unittest.TestCase):
                          ((('args', ..., ..., 'var_positional'),), ...))
         self.assertEqual(self.signature(A.f3),
                          ((('args', ..., ..., 'var_positional'),), ...))
-        self.assertEqual(self.signature(A.f4), 
+        self.assertEqual(self.signature(A.f4),
                          ((('args', ..., ..., 'var_positional'),
                             ('kwargs', ..., ..., 'var_keyword')), ...))
     @cpython_only
@@ -3557,6 +3557,19 @@ class TestSignatureDefinitions(unittest.TestCase):
                 self.assertIsNone(obj.__text_signature__)
 
 
+class NTimesUnwrappable:
+    def __init__(self, n):
+        self.n = n
+        self._next = None
+
+    @property
+    def __wrapped__(self):
+        if self.n <= 0:
+            raise Exception("Unwrapped too many times")
+        if self._next is None:
+            self._next = NTimesUnwrappable(self.n - 1)
+        return self._next
+
 class TestUnwrap(unittest.TestCase):
 
     def test_unwrap_one(self):
@@ -3611,6 +3624,11 @@ class TestUnwrap(unittest.TestCase):
             __hash__ = None
             __wrapped__ = func
         self.assertIsNone(inspect.unwrap(C()))
+
+    def test_recursion_limit(self):
+        obj = NTimesUnwrappable(sys.getrecursionlimit() + 1)
+        with self.assertRaisesRegex(ValueError, 'wrapper loop'):
+            inspect.unwrap(obj)
 
 class TestMain(unittest.TestCase):
     def test_only_source(self):
