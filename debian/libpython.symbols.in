@@ -316,7 +316,6 @@
  PyExc_PermissionError@Base @SVER@
  PyExc_ProcessLookupError@Base @SVER@
  PyExc_RecursionError@Base @SVER@
- PyExc_RecursionErrorInst@Base @SVER@
  PyExc_ReferenceError@Base @SVER@
  PyExc_ResourceWarning@Base @SVER@
  PyExc_RuntimeError@Base @SVER@
