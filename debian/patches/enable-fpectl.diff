@@ -8,10 +8,10 @@ Subject: enable-fpectl
  1 file changed, 6 insertions(+)
 
 diff --git a/setup.py b/setup.py
-index e64df99..bbac680 100644
+index 2e5509c..d77e946 100644
 --- a/setup.py
 +++ b/setup.py
-@@ -1400,6 +1400,12 @@ class PyBuildExt(build_ext):
+@@ -1430,6 +1430,12 @@ class PyBuildExt(build_ext):
          else:
              missing.append('_curses_panel')
  
