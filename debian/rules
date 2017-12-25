@@ -286,7 +286,8 @@ PROFILE_EXCLUDES = test_compiler test_distutils test_subprocess \
 	test_threading test_threading_local test_threadsignals \
 	test_concurrent_futures test_ctypes \
 	test_dbm_dumb test_dbm_ndbm test_pydoc test_sundry \
-	test_signal test_ioctl test_gdb test_ensurepip test_venv
+	test_signal test_ioctl test_gdb test_ensurepip test_venv \
+	test_asyncio test_io
 
 # FIXME: these fail in the profile build
 PROFILE_EXCLUDES += \
@@ -320,7 +321,8 @@ run-profile-task:
 stamps/stamp-build-shared: stamps/stamp-configure-shared
 	dh_testdir
 	$(MAKE) $(NJOBS) -C $(buildd_shared) \
-		EXTRA_CFLAGS="$(EXTRA_OPT_CFLAGS)"
+		EXTRA_CFLAGS="$(EXTRA_OPT_CFLAGS)" \
+		PROFILE_TASK='$(PROFILE_TASK)' $(make_build_target)
 	: # build a static library with PIC objects
 	$(MAKE) $(NJOBS) -C $(buildd_shared) \
 		EXTRA_CFLAGS="$(EXTRA_OPT_CFLAGS)" \
@@ -330,14 +332,14 @@ stamps/stamp-build-shared: stamps/stamp-configure-shared
 stamps/stamp-build-debug: stamps/stamp-configure-debug
 	dh_testdir
 	$(MAKE) $(NJOBS) -C $(buildd_debug) \
-		EXTRA_CFLAGS="$(DEBUG_CFLAGS)"
+		EXTRA_CFLAGS="$(DEBUG_CFLAGS)" build_all
 	touch stamps/stamp-build-debug
 
 stamps/stamp-build-shared-debug: stamps/stamp-configure-shared-debug
 	dh_testdir
 	: # build the shared debug library
 	$(MAKE) $(NJOBS) -C $(buildd_shdebug) \
-		EXTRA_CFLAGS="$(DEBUG_CFLAGS)"
+		EXTRA_CFLAGS="$(DEBUG_CFLAGS)" build_all
 	touch stamps/stamp-build-shared-debug
 
 common_configure_args = \
