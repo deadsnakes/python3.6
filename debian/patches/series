@@ -10,7 +10,6 @@ link-opt.diff
 setup-modules.diff
 platform-lsbrelease.diff
 bdist-wininst-notfound.diff
-profiled-build.diff
 enable-fpectl.diff
 langpack-gettext.diff
 disable-sem-check.diff
