@@ -1,3 +1,9 @@
+python3.6 (3.6.4-1+trusty3) trusty; urgency=medium
+
+  * Revert "Enable PGO optimization"
+
+ -- Anthony Sottile <asottile@umich.edu>  Sun, 28 Jan 2018 12:58:48 -0800
+
 python3.6 (3.6.4-1+trusty2) trusty; urgency=medium
 
   * Enable PGO optimization
