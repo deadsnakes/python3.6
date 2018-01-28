@@ -1,3 +1,9 @@
+python3.6 (3.6.4-1+xenial2) xenial; urgency=medium
+
+  * Enable PGO optimization
+
+ -- Anthony Sottile <asottile@umich.edu>  Sun, 28 Jan 2018 09:52:01 -0800
+
 python3.6 (3.6.4-1+xenial1) xenial; urgency=medium
 
   * Python 3.6.4 release
