@@ -8,7 +8,7 @@ Subject: lto-link-flags
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/Makefile.pre.in b/Makefile.pre.in
-index 5e88e3f..b02f4b0 100644
+index 1c9ffea..e43904e 100644
 --- a/Makefile.pre.in
 +++ b/Makefile.pre.in
 @@ -146,7 +146,7 @@ CONFINCLUDEPY=	$(CONFINCLUDEDIR)/python$(LDVERSION)
@@ -20,7 +20,7 @@ index 5e88e3f..b02f4b0 100644
  LDCXXSHARED=	@LDCXXSHARED@
  DESTSHARED=	$(BINLIBDEST)/lib-dynload
  
-@@ -545,7 +545,7 @@ clinic: check-clean-src $(BUILDPYTHON) $(srcdir)/Modules/_blake2/blake2s_impl.c
+@@ -544,7 +544,7 @@ clinic: check-clean-src $(srcdir)/Modules/_blake2/blake2s_impl.c
  
  # Build the interpreter
  $(BUILDPYTHON):	Programs/python.o $(LIBRARY) $(LDLIBRARY) $(PY3LIBRARY)
