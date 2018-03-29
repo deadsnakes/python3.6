@@ -1568,6 +1568,7 @@
  _Py_Constant@Base @SVER@
  _Py_Continue@Base @SVER@
  _Py_Dealloc@Base @SVER@
+ _Py_DecodeLocaleEx@Base 3.6.5
  _Py_Delete@Base @SVER@
  _Py_Dict@Base @SVER@
  _Py_DictComp@Base @SVER@
@@ -1579,6 +1580,7 @@
  _Py_DumpTracebackThreads@Base @SVER@
  _Py_Ellipsis@Base @SVER@
  _Py_EllipsisObject@Base @SVER@
+ _Py_EncodeLocaleEx@Base 3.6.5
  _Py_ExceptHandler@Base @SVER@
  _Py_Expr@Base @SVER@
  _Py_Expression@Base @SVER@
@@ -1591,6 +1593,7 @@
  _Py_FunctionDef@Base @SVER@
  _Py_GeneratorExp@Base @SVER@
  _Py_GetAllocatedBlocks@Base @SVER@
+ _Py_GetLocaleconvNumeric@Base 3.6.5
  _Py_Global@Base @SVER@
  _Py_Gid_Converter@Base @SVER@
  _Py_HashBytes@Base @SVER@
@@ -1765,6 +1768,7 @@
  (arch=amd64 i386 lpia)_Py_set_387controlword@Base @SVER@
  _Py_set_blocking@Base @SVER@
  _Py_set_inheritable@Base @SVER@
+ _Py_set_inheritable_async_safe@Base 3.6.5
  _Py_startswith__doc__@Base @SVER@
  _Py_stat@Base @SVER@
  _Py_strhex@Base @SVER@

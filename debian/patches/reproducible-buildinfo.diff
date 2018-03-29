@@ -8,7 +8,7 @@ Subject: reproducible-buildinfo
  1 file changed, 2 insertions(+)
 
 diff --git a/Makefile.pre.in b/Makefile.pre.in
-index 7818ae3..0a09bc1 100644
+index 1cc2166..c4622b7 100644
 --- a/Makefile.pre.in
 +++ b/Makefile.pre.in
 @@ -735,6 +735,8 @@ Modules/getbuildinfo.o: $(PARSER_OBJS) \
