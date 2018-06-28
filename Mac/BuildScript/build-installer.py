@@ -210,9 +210,9 @@ def library_recipes():
 
     result.extend([
           dict(
-              name="OpenSSL 1.0.2n",
-              url="https://www.openssl.org/source/openssl-1.0.2n.tar.gz",
-              checksum='13bdc1b1d1ff39b6fd42a255e74676a4',
+              name="OpenSSL 1.0.2o",
+              url="https://www.openssl.org/source/openssl-1.0.2o.tar.gz",
+              checksum='44279b8557c3247cbe324e2322ecd114',
               buildrecipe=build_universal_openssl,
               configure=None,
               install=None,
@@ -1523,6 +1523,10 @@ def buildDMG():
             shellQuote(os.path.join(WORKDIR, 'installer')),
             shellQuote(imagepath + ".tmp.dmg" )))
 
+    # Try to mitigate race condition in certain versions of macOS, e.g. 10.9,
+    # when hdiutil fails with  "Resource busy"
+
+    time.sleep(10)
 
     if not os.path.exists(os.path.join(WORKDIR, "mnt")):
         os.mkdir(os.path.join(WORKDIR, "mnt"))
