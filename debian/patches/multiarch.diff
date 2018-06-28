@@ -41,10 +41,10 @@ index 9314e71..bbad7c3 100644
          srcdir = _CONFIG_VARS.get('srcdir', _PROJECT_BASE)
          if os.name == 'posix':
 diff --git a/Makefile.pre.in b/Makefile.pre.in
-index e43904e..1cc2166 100644
+index dbf5dfd..b27d15d 100644
 --- a/Makefile.pre.in
 +++ b/Makefile.pre.in
-@@ -763,6 +763,7 @@ Modules/signalmodule.o: $(srcdir)/Modules/signalmodule.c $(srcdir)/Modules/posix
+@@ -767,6 +767,7 @@ Modules/signalmodule.o: $(srcdir)/Modules/signalmodule.c $(srcdir)/Modules/posix
  
  Python/dynload_shlib.o: $(srcdir)/Python/dynload_shlib.c Makefile
  	$(CC) -c $(PY_CORE_CFLAGS) \
@@ -52,7 +52,7 @@ index e43904e..1cc2166 100644
  		-DSOABI='"$(SOABI)"' \
  		-o $@ $(srcdir)/Python/dynload_shlib.c
  
-@@ -1414,7 +1415,7 @@ inclinstall:
+@@ -1418,7 +1419,7 @@ inclinstall:
  LIBPL=		@LIBPL@
  
  # pkgconfig directory
