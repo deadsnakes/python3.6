@@ -2263,7 +2263,13 @@ features:
 
    .. attribute:: st_ino
 
-      Inode number.
+      Platform dependent, but if non-zero, uniquely identifies the
+      file for a given value of ``st_dev``. Typically:
+
+      * the inode number on Unix,
+      * the `file index
+        <https://msdn.microsoft.com/en-us/library/aa363788>`_ on
+        Windows
 
    .. attribute:: st_dev
 
@@ -2415,6 +2421,10 @@ features:
 
    .. versionadded:: 3.5
       Added the :attr:`st_file_attributes` member on Windows.
+
+   .. versionchanged:: 3.5
+      Windows now returns the file index as :attr:`st_ino` when
+      available.
 
 
 .. function:: stat_float_times([newvalue])
@@ -2725,7 +2735,7 @@ features:
    no effect on the behavior of the walk, because in bottom-up mode the directories
    in *dirnames* are generated before *dirpath* itself is generated.
 
-   By default, errors from the :func:`listdir` call are ignored.  If optional
+   By default, errors from the :func:`scandir` call are ignored.  If optional
    argument *onerror* is specified, it should be a function; it will be called with
    one argument, an :exc:`OSError` instance.  It can report the error to continue
    with the walk, or raise the exception to abort the walk.  Note that the filename
