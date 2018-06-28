@@ -57,8 +57,9 @@ LIBRESSL_OLD_VERSIONS = [
 ]
 
 LIBRESSL_RECENT_VERSIONS = [
-    "2.5.3",
     "2.5.5",
+    "2.6.4",
+    "2.7.1",
 ]
 
 # store files in ../multissl
@@ -122,6 +123,11 @@ parser.add_argument(
     action='store_true',
     help="Don't run tests, only compile _ssl.c and _hashopenssl.c."
 )
+parser.add_argument(
+    '--system',
+    default='',
+    help="Override the automatic system type detection."
+)
 
 
 class AbstractBuilder(object):
@@ -149,6 +155,7 @@ class AbstractBuilder(object):
         # build directory (removed after install)
         self.build_dir = os.path.join(
             self.src_dir, self.build_template.format(version))
+        self.system = args.system
 
     def __str__(self):
         return "<{0.__class__.__name__} for {0.version}>".format(self)
@@ -253,9 +260,13 @@ class AbstractBuilder(object):
         cwd = self.build_dir
         cmd = ["./config", "shared", "--prefix={}".format(self.install_dir)]
         cmd.extend(self.compile_args)
-        self._subprocess_call(cmd, cwd=cwd)
+        env = None
+        if self.system:
+            env = os.environ.copy()
+            env['SYSTEM'] = self.system
+        self._subprocess_call(cmd, cwd=cwd, env=env)
         # Old OpenSSL versions do not support parallel builds.
-        self._subprocess_call(["make", "-j1"], cwd=cwd)
+        self._subprocess_call(["make", "-j1"], cwd=cwd, env=env)
 
     def _make_install(self, remove=True):
         self._subprocess_call(["make", "-j1", "install"], cwd=self.build_dir)

@@ -666,6 +666,13 @@ The module defines the following classes, functions and decorators:
 
    .. versionadded:: 3.6
 
+.. class:: AsyncContextManager(Generic[T_co])
+
+   An ABC with async abstract :meth:`__aenter__` and :meth:`__aexit__`
+   methods.
+
+   .. versionadded:: 3.6
+
 .. class:: Dict(dict, MutableMapping[KT, VT])
 
    A generic version of :class:`dict`.
@@ -930,6 +937,18 @@ The module defines the following classes, functions and decorators:
 
    * Every type is compatible with :data:`Any`.
    * :data:`Any` is compatible with every type.
+
+.. data:: NoReturn
+
+   Special type indicating that a function never returns.
+   For example::
+
+      from typing import NoReturn
+
+      def stop() -> NoReturn:
+          raise RuntimeError('no way')
+
+   .. versionadded:: 3.6.5
 
 .. data:: Union
 
