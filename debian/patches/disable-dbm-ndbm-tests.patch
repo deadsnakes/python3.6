@@ -7,10 +7,10 @@ Subject: disable-dbm-ndbm-tests
  1 file changed, 5 insertions(+)
 
 diff --git a/Lib/test/test_dbm.py b/Lib/test/test_dbm.py
-index f0a428d..bab439f 100644
+index 1884b5c..2758d77 100644
 --- a/Lib/test/test_dbm.py
 +++ b/Lib/test/test_dbm.py
-@@ -109,6 +109,11 @@ class AnyDBMTestCase:
+@@ -129,6 +129,11 @@ class AnyDBMTestCase:
          f.close()
  
      def read_helper(self, f):

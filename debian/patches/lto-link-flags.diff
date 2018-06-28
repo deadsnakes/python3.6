@@ -8,7 +8,7 @@ Subject: lto-link-flags
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/Makefile.pre.in b/Makefile.pre.in
-index d61a13d..979ab0e 100644
+index 42b521a..c749310 100644
 --- a/Makefile.pre.in
 +++ b/Makefile.pre.in
 @@ -146,7 +146,7 @@ CONFINCLUDEPY=	$(CONFINCLUDEDIR)/python$(LDVERSION)
