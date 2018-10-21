@@ -1176,13 +1176,22 @@ Editor code context option revised.  Box displays all context lines up to
 maxlines.  Clicking on a context line jumps the editor to that line.  Context
 colors for custom themes is added to Highlights tab of Settings dialog.
 (Contributed by Cheryl Sabella and Terry Jan Reedy in :issue:`33642`,
-:issue:`33768`, and :issue:`33679`)
+:issue:`33768`, and :issue:`33679`.)
 
 On Windows, a new API call tells Windows that tk scales for DPI. On Windows
 8.1+ or 10, with DPI compatibility properties of the Python binary
 unchanged, and a monitor resolution greater than 96 DPI, this should
 make text and lines sharper.  It should otherwise have no effect.
-(Contributed by Terry Jan Reedy in :issue:`33656`).
+(Contributed by Terry Jan Reedy in :issue:`33656`.)
+
+New in 3.6.7:
+
+Output over N lines (50 by default) is squeezed down to a button.
+N can be changed in the PyShell section of the General page of the
+Settings dialog.  Fewer, but possibly extra long, lines can be squeezed by
+right clicking on the output.  Squeezed output can be expanded in place
+by double-clicking the button or into the clipboard or a separate window
+by right-clicking the button.  (Contributed by Tal Einat in :issue:`1529353`.)
 
 
 importlib
@@ -1462,6 +1471,10 @@ Server and client-side specific TLS protocols for :class:`~ssl.SSLContext`
 were added.
 (Contributed by Christian Heimes in :issue:`28085`.)
 
+Added :attr:`SSLContext.post_handshake_auth` to enable and
+:meth:`ssl.SSLSocket.verify_client_post_handshake` to initiate TLS 1.3
+post-handshake authentication.
+(Contributed by Christian Heimes in :issue:`34670`.)
 
 statistics
 ----------
@@ -1855,7 +1868,7 @@ Build and C API Changes
   For more information, see :pep:`7` and :issue:`17884`.
 
 * Cross-compiling CPython with the Android NDK and the Android API level set to
-  21 (Android 5.0 Lollilop) or greater runs successfully. While Android is not
+  21 (Android 5.0 Lollipop) or greater runs successfully. While Android is not
   yet a supported platform, the Python test suite runs on the Android emulator
   with only about 16 tests failures. See the Android meta-issue :issue:`26865`.
 
@@ -2051,6 +2064,15 @@ connected to and thus what Python interpreter will be used by the virtual
 environment.  (Contributed by Brett Cannon in :issue:`25154`.)
 
 
+xml
+---
+
+* As mitigation against DTD and external entity retrieval, the
+  :mod:`xml.dom.minidom` and mod:`xml.sax` modules no longer process
+  external entities by default.
+  (Contributed by Christian Heimes in :issue:`17239`.)
+
+
 Deprecated functions and types of the C API
 -------------------------------------------
 
@@ -2159,7 +2181,7 @@ Changes in the Python API
 
 * The functions in the :mod:`compileall` module now return booleans instead
   of ``1`` or ``0`` to represent success or failure, respectively. Thanks to
-  booleans being a subclass of integers, this should only be an issue if you
+  booleans being a subclass of integers, this should only be an issue if you7
   were doing identity checks for ``1`` or ``0``. See :issue:`25768`.
 
 * Reading the :attr:`~urllib.parse.SplitResult.port` attribute of
@@ -2404,3 +2426,10 @@ Notable changes in Python 3.6.5
 The :func:`locale.localeconv` function now sets temporarily the ``LC_CTYPE``
 locale to the ``LC_NUMERIC`` locale in some cases.
 (Contributed by Victor Stinner in :issue:`31900`.)
+
+
+Notable changes in Python 3.6.7
+===============================
+
+:mod:`xml.dom.minidom` and mod:`xml.sax` modules no longer process
+external entities by default. See also :issue:`17239`.

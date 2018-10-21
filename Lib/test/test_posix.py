@@ -19,6 +19,21 @@ import warnings
 _DUMMY_SYMLINK = os.path.join(tempfile.gettempdir(),
                               support.TESTFN + '-dummy-symlink')
 
+requires_32b = unittest.skipUnless(sys.maxsize < 2**32,
+        'test is only meaningful on 32-bit builds')
+
+def _supports_sched():
+    if not hasattr(posix, 'sched_getscheduler'):
+        return False
+    try:
+        posix.sched_getscheduler(0)
+    except OSError as e:
+        if e.errno == errno.ENOSYS:
+            return False
+    return True
+
+requires_sched = unittest.skipUnless(_supports_sched(), 'requires POSIX scheduler API')
+
 class PosixTester(unittest.TestCase):
 
     def setUp(self):
@@ -322,6 +337,17 @@ class PosixTester(unittest.TestCase):
         finally:
             os.close(fd)
 
+    @unittest.skipUnless(hasattr(posix, 'writev'), "test needs posix.writev()")
+    @requires_32b
+    def test_writev_overflow_32bits(self):
+        fd = os.open(support.TESTFN, os.O_RDWR | os.O_CREAT)
+        try:
+            with self.assertRaises(OSError) as cm:
+                os.writev(fd, [b"x" * 2**16] * 2**15)
+            self.assertEqual(cm.exception.errno, errno.EINVAL)
+        finally:
+            os.close(fd)
+
     @unittest.skipUnless(hasattr(posix, 'readv'), "test needs posix.readv()")
     def test_readv(self):
         fd = os.open(support.TESTFN, os.O_RDWR | os.O_CREAT)
@@ -341,6 +367,19 @@ class PosixTester(unittest.TestCase):
                 pass
             else:
                 self.assertEqual(size, 0)
+        finally:
+            os.close(fd)
+
+    @unittest.skipUnless(hasattr(posix, 'readv'), "test needs posix.readv()")
+    @requires_32b
+    def test_readv_overflow_32bits(self):
+        fd = os.open(support.TESTFN, os.O_RDWR | os.O_CREAT)
+        try:
+            buf = [bytearray(2**16)] * 2**15
+            with self.assertRaises(OSError) as cm:
+                os.readv(fd, buf)
+            self.assertEqual(cm.exception.errno, errno.EINVAL)
+            self.assertEqual(bytes(buf[0]), b'\0'* 2**16)
         finally:
             os.close(fd)
 
@@ -1109,7 +1148,7 @@ class PosixTester(unittest.TestCase):
             self.assertRaises(OSError, posix.sched_get_priority_min, -23)
             self.assertRaises(OSError, posix.sched_get_priority_max, -23)
 
-    @unittest.skipUnless(hasattr(posix, 'sched_setscheduler'), "can't change scheduler")
+    @requires_sched
     def test_get_and_set_scheduler_and_param(self):
         possible_schedulers = [sched for name, sched in posix.__dict__.items()
                                if name.startswith("SCHED_")]
