@@ -1221,7 +1221,7 @@ static PyGetSetDef TaskStepMethWrapper_getsetlist[] = {
     {NULL} /* Sentinel */
 };
 
-PyTypeObject TaskStepMethWrapper_Type = {
+static PyTypeObject TaskStepMethWrapper_Type = {
     PyVarObject_HEAD_INIT(NULL, 0)
     "TaskStepMethWrapper",
     .tp_basicsize = sizeof(TaskStepMethWrapper),
@@ -1296,7 +1296,7 @@ TaskWakeupMethWrapper_dealloc(TaskWakeupMethWrapper *o)
     Py_TYPE(o)->tp_free(o);
 }
 
-PyTypeObject TaskWakeupMethWrapper_Type = {
+static PyTypeObject TaskWakeupMethWrapper_Type = {
     PyVarObject_HEAD_INIT(NULL, 0)
     "TaskWakeupMethWrapper",
     .tp_basicsize = sizeof(TaskWakeupMethWrapper),
@@ -2121,14 +2121,19 @@ set_exception:
 
             if (task->task_must_cancel) {
                 PyObject *r;
-                r = future_cancel(fut);
+                int is_true;
+                r = _PyObject_CallMethodId(result, &PyId_cancel, NULL);
                 if (r == NULL) {
                     return NULL;
                 }
-                if (r == Py_True) {
+                is_true = PyObject_IsTrue(r);
+                Py_DECREF(r);
+                if (is_true < 0) {
+                    return NULL;
+                }
+                else if (is_true) {
                     task->task_must_cancel = 0;
                 }
-                Py_DECREF(r);
             }
 
             Py_RETURN_NONE;

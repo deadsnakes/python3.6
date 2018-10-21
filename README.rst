@@ -1,4 +1,4 @@
-This is Python version 3.6.6
+This is Python version 3.6.7
 ============================
 
 .. image:: https://travis-ci.org/python/cpython.svg?branch=3.6
@@ -8,6 +8,10 @@ This is Python version 3.6.6
 .. image:: https://ci.appveyor.com/api/projects/status/4mew1a93xdkbf5ua/branch/3.6?svg=true
    :alt: CPython build status on Appveyor
    :target: https://ci.appveyor.com/project/python/cpython/branch/3.6
+
+.. image:: https://dev.azure.com/python/cpython/_apis/build/status/Azure%20Pipelines%20CI?branchName=3.6
+   :alt: CPython build status on Azure Pipelines
+   :target: https://dev.azure.com/python/cpython/_build/latest?definitionId=4&branchName=3.6
 
 .. image:: https://codecov.io/gh/python/cpython/branch/3.6/graph/badge.svg
    :alt: CPython code coverage on Codecov
@@ -186,6 +190,8 @@ If the failure persists and appears to be a problem with Python rather than
 your environment, you can `file a bug report <https://bugs.python.org>`_ and
 include relevant output from that command to show the issue.
 
+See `Running & Writing Tests <https://devguide.python.org/runtests/>`_
+for more on running tests.
 
 Installing multiple versions
 ----------------------------
