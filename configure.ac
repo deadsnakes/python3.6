@@ -37,9 +37,9 @@ HAS_GIT=no-repository
 fi
 if test $HAS_GIT = found
 then
-    GITVERSION="git -C \$(srcdir) rev-parse --short HEAD"
-    GITTAG="git -C \$(srcdir) describe --all --always --dirty"
-    GITBRANCH="git -C \$(srcdir) name-rev --name-only HEAD"
+    GITVERSION="git --git-dir \$(srcdir)/.git rev-parse --short HEAD"
+    GITTAG="git --git-dir \$(srcdir)/.git describe --all --always --dirty"
+    GITBRANCH="git --git-dir \$(srcdir)/.git name-rev --name-only HEAD"
 else
     GITVERSION=""
     GITTAG=""
@@ -1347,6 +1347,13 @@ if test "$Py_LTO" = 'true' ; then
       esac
       ;;
   esac
+
+  if test "$ac_cv_prog_cc_g" = "yes"
+  then
+      # bpo-30345: Add -g to LDFLAGS when compiling with LTO
+      # to get debug symbols.
+      LTOFLAGS="$LTOFLAGS -g"
+  fi
 fi
 
 # Enable PGO flags.
@@ -3472,7 +3479,7 @@ AC_CHECK_FUNCS(alarm accept4 setitimer getitimer bind_textdomain_codeset chown \
  futimens futimes gai_strerror getentropy \
  getgrouplist getgroups getlogin getloadavg getpeername getpgid getpid \
  getpriority getresuid getresgid getpwent getspnam getspent getsid getwd \
- initgroups kill killpg lchmod lchown linkat lstat lutimes mmap \
+ initgroups kill killpg lchown linkat lstat lutimes mmap \
  memrchr mbrtowc mkdirat mkfifo \
  mkfifoat mknod mknodat mktime mremap nice openat pathconf pause pipe2 plock poll \
  posix_fallocate posix_fadvise pread \
@@ -3487,6 +3494,13 @@ AC_CHECK_FUNCS(alarm accept4 setitimer getitimer bind_textdomain_codeset chown \
  sysconf tcgetpgrp tcsetpgrp tempnam timegm times tmpfile tmpnam tmpnam_r \
  truncate uname unlinkat unsetenv utimensat utimes waitid waitpid wait3 wait4 \
  wcscoll wcsftime wcsxfrm wmemcmp writev _getpty)
+
+# Force lchmod off for Linux. Linux disallows changing the mode of symbolic
+# links. Some libc implementations have a stub lchmod implementation that always
+# returns an error.
+if test "$MACHDEP" != linux; then
+  AC_CHECK_FUNCS(lchmod)
+fi
 
 AC_CHECK_DECL(dirfd,
     AC_DEFINE(HAVE_DIRFD, 1,
@@ -4890,11 +4904,6 @@ then
       [Define if poll() sets errno on invalid file descriptors.])
 fi
 
-# Before we can test tzset, we need to check if struct tm has a tm_zone
-# (which is not required by ISO C or UNIX spec) and/or if we support
-# tzname[]
-AC_STRUCT_TIMEZONE
-
 # check tzset(3) exists and works like we expect it to
 AC_MSG_CHECKING(for working tzset())
 AC_CACHE_VAL(ac_cv_working_tzset, [
@@ -5444,7 +5453,6 @@ AC_LINK_IFELSE(
   AC_LANG_SOURCE([[
     #include <stdatomic.h>
     atomic_int value = ATOMIC_VAR_INIT(1);
-    _Atomic void *py_atomic_address = (void*) &value;
     int main() {
       int loaded_value = atomic_load(&value);
       return 0;
@@ -5456,7 +5464,7 @@ AC_MSG_RESULT($have_stdatomic_h)
 
 if test "$have_stdatomic_h" = yes; then
     AC_DEFINE(HAVE_STD_ATOMIC, 1,
-              [Has stdatomic.h, atomic_int and _Atomic void* types work])
+              [Has stdatomic.h with atomic_int])
 fi
 
 # Check for GCC >= 4.7 __atomic builtins
