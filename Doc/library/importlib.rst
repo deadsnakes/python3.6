@@ -1404,7 +1404,7 @@ Importing a source file directly
 ''''''''''''''''''''''''''''''''
 
 To import a Python source file directly, use the following recipe
-(Python 3.4 and newer only)::
+(Python 3.5 and newer only)::
 
   import importlib.util
   import sys
@@ -1482,7 +1482,7 @@ Python 3.6 and newer for other parts of the code).
       if '.' in absolute_name:
           parent_name, _, child_name = absolute_name.rpartition('.')
           parent_module = import_module(parent_name)
-          path = parent_module.spec.submodule_search_locations
+          path = parent_module.__spec__.submodule_search_locations
       for finder in sys.meta_path:
           spec = finder.find_spec(absolute_name, path)
           if spec is not None:

@@ -2,6 +2,8 @@
 """
 This script is used to build "official" universal installers on macOS.
 
+NEW for 3.6.8 / 2.7.16:
+- also build and use Tk 8.6 for 10.6+ installers
 NEW for 3.6.5:
 - support Intel 64-bit-only () and 32-bit-only installer builds
 - build and link with private Tcl/Tk 8.6 for 10.9+ builds
@@ -20,8 +22,8 @@ Sphinx and dependencies are installed into a venv using the python3's pip
 so will fetch them from PyPI if necessary.  Since python3 is now used for
 Sphinx, build-installer.py should also be converted to use python3!
 
-For 10.9 or greater deployment targets, build-installer builds and links
-with its own copy of Tcl/Tk 8.5 and the rest of this paragraph does not
+For 10.6 or greater deployment targets, build-installer builds and links
+with its own copy of Tcl/Tk 8.6 and the rest of this paragraph does not
 apply.  Otherwise, build-installer requires an installed third-party version
 of Tcl/Tk 8.4 (for OS X 10.4 and 10.5 deployment targets) or Tcl/TK 8.5
 (for 10.6 or later) installed in /Library/Frameworks.  When installed,
@@ -188,9 +190,9 @@ USAGE = textwrap.dedent("""\
 EXPECTED_SHARED_LIBS = {}
 
 # Are we building and linking with our own copy of Tcl/TK?
-#   For now, do so if deployment target is 10.9+.
+#   For now, do so if deployment target is 10.6+.
 def internalTk():
-    return getDeptargetTuple() >= (10, 9)
+    return getDeptargetTuple() >= (10, 6)
 
 # List of names of third party software built with this installer.
 # The names will be inserted into the rtf version of the License.
@@ -211,9 +213,9 @@ def library_recipes():
 
     result.extend([
           dict(
-              name="OpenSSL 1.0.2p",
-              url="https://www.openssl.org/source/openssl-1.0.2p.tar.gz",
-              checksum='ac5eb30bf5798aa14b1ae6d0e7da58df',
+              name="OpenSSL 1.0.2q",
+              url="https://www.openssl.org/source/openssl-1.0.2q.tar.gz",
+              checksum='7563e1ce046cb21948eeb6ba1a0eb71c',
               buildrecipe=build_universal_openssl,
               configure=None,
               install=None,
@@ -223,9 +225,9 @@ def library_recipes():
     if internalTk():
         result.extend([
           dict(
-              name="Tcl 8.6.8",
-              url="ftp://ftp.tcl.tk/pub/tcl//tcl8_6/tcl8.6.8-src.tar.gz",
-              checksum='81656d3367af032e0ae6157eff134f89',
+              name="Tcl 8.6.9",
+              url="ftp://ftp.tcl.tk/pub/tcl//tcl8_6/tcl8.6.9-src.tar.gz",
+              checksum='aa0a121d95a0e7b73a036f26028538d4',
               buildDir="unix",
               configure_pre=[
                     '--enable-shared',
@@ -239,12 +241,9 @@ def library_recipes():
                   },
               ),
           dict(
-              name="Tk 8.6.8",
-              url="ftp://ftp.tcl.tk/pub/tcl//tcl8_6/tk8.6.8-src.tar.gz",
-              checksum='5e0faecba458ee1386078fb228d008ba',
-              patches=[
-                  "tk868_on_10_8_10_9.patch",
-                   ],
+              name="Tk 8.6.9.1",
+              url="ftp://ftp.tcl.tk/pub/tcl//tcl8_6/tk8.6.9.1-src.tar.gz",
+              checksum='9efe3976468352dc894dae0c4e785a8e',
               buildDir="unix",
               configure_pre=[
                     '--enable-aqua',
@@ -706,6 +705,7 @@ def extractArchive(builddir, archiveName):
     work for current Tcl and Tk source releases where the basename of
     the archive ends with "-src" but the uncompressed directory does not.
     For now, just special case Tcl and Tk tar.gz downloads.
+    Another special case: the tk8.6.9.1 tarball extracts to tk8.6.9.
     """
     curdir = os.getcwd()
     try:
@@ -715,6 +715,8 @@ def extractArchive(builddir, archiveName):
             if ((retval.startswith('tcl') or retval.startswith('tk'))
                     and retval.endswith('-src')):
                 retval = retval[:-4]
+                if retval == 'tk8.6.9.1':
+                    retval = 'tk8.6.9'
             if os.path.exists(retval):
                 shutil.rmtree(retval)
             fp = os.popen("tar zxf %s 2>&1"%(shellQuote(archiveName),), 'r')
@@ -1531,16 +1533,27 @@ def buildDMG():
     imagepath = imagepath + '.dmg'
 
     os.mkdir(outdir)
+
+    # Try to mitigate race condition in certain versions of macOS, e.g. 10.9,
+    # when hdiutil create fails with  "Resource busy".  For now, just retry
+    # the create a few times and hope that it eventually works.
+
     volname='Python %s'%(getFullVersion())
-    runCommand("hdiutil create -format UDRW -volname %s -srcfolder %s %s"%(
+    cmd = ("hdiutil create -format UDRW -volname %s -srcfolder %s -size 100m %s"%(
             shellQuote(volname),
             shellQuote(os.path.join(WORKDIR, 'installer')),
             shellQuote(imagepath + ".tmp.dmg" )))
-
-    # Try to mitigate race condition in certain versions of macOS, e.g. 10.9,
-    # when hdiutil fails with  "Resource busy"
-
-    time.sleep(10)
+    for i in range(5):
+        fd = os.popen(cmd, 'r')
+        data = fd.read()
+        xit = fd.close()
+        if not xit:
+            break
+        sys.stdout.write(data)
+        print(" -- retrying hdiutil create")
+        time.sleep(5)
+    else:
+        raise RuntimeError("command failed: %s"%(commandline,))
 
     if not os.path.exists(os.path.join(WORKDIR, "mnt")):
         os.mkdir(os.path.join(WORKDIR, "mnt"))
