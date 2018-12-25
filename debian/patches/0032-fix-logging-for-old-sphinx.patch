@@ -1,0 +1,21 @@
+From: Anthony Sottile <asottile@umich.edu>
+Date: Mon, 24 Dec 2018 12:01:18 -0800
+Subject: fix logging for old sphinx
+
+---
+ Doc/tools/extensions/escape4chm.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Doc/tools/extensions/escape4chm.py b/Doc/tools/extensions/escape4chm.py
+index e999971..7b3948e 100644
+--- a/Doc/tools/extensions/escape4chm.py
++++ b/Doc/tools/extensions/escape4chm.py
+@@ -8,7 +8,7 @@ https://bugs.python.org/issue32174
+ import re
+ from html.entities import codepoint2name
+ 
+-from sphinx.util.logging import getLogger
++from logging import getLogger
+ 
+ # escape the characters which codepoint > 0x7F
+ def _process(string):
