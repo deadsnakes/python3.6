@@ -2,6 +2,109 @@
 Python News
 +++++++++++
 
+What's New in Python 3.6.9 final?
+=================================
+
+*Release date: 2019-07-02*
+
+Library
+-------
+
+- bpo-37437: Update vendorized expat version to 2.2.7.
+
+macOS
+-----
+
+- bpo-34602: Avoid test suite failures on macOS by no longer calling
+  resource.setrlimit to increase the process stack size limit at runtime.
+  The runtime change is no longer needed since the interpreter is being
+  built with a larger default stack size.
+
+
+What's New in Python 3.6.9 release candidate 1?
+===============================================
+
+*Release date: 2019-06-18*
+
+Security
+--------
+
+- bpo-35907: CVE-2019-9948: Avoid file reading by disallowing
+  ``local-file://`` and ``local_file://`` URL schemes in
+  ``URLopener().open()`` and ``URLopener().retrieve()`` of
+  :mod:`urllib.request`.
+
+- bpo-36742: Fixes mishandling of pre-normalization characters in
+  urlsplit().
+
+- bpo-30458: Address CVE-2019-9740 by disallowing URL paths with embedded
+  whitespace or control characters through into the underlying http client
+  request.  Such potentially malicious header injection URLs now cause an
+  http.client.InvalidURL exception to be raised.
+
+- bpo-36216: Changes urlsplit() to raise ValueError when the URL contains
+  characters that decompose under IDNA encoding (NFKC-normalization) into
+  characters that affect how the URL is parsed.
+
+- bpo-33529: Prevent fold function used in email header encoding from
+  entering infinite loop when there are too many non-ASCII characters in a
+  header.
+
+- bpo-35746: [CVE-2019-5010] Fix a NULL pointer deref in ssl module. The
+  cert parser did not handle CRL distribution points with empty DP or URI
+  correctly. A malicious or buggy certificate can result into segfault.
+  Vulnerability (TALOS-2018-0758) reported by Colin Read and Nicolas Edet of
+  Cisco.
+
+- bpo-35121: Don't send cookies of domain A without Domain attribute to
+  domain B when domain A is a suffix match of domain B while using a
+  cookiejar with :class:`http.cookiejar.DefaultCookiePolicy` policy. Patch
+  by Karthikeyan Singaravelan.
+
+Library
+-------
+
+- bpo-35643: Fixed a SyntaxWarning: invalid escape sequence in
+  Modules/_sha3/cleanup.py. Patch by Mickaël Schoentgen.
+
+- bpo-35121: Don't set cookie for a request when the request path is a
+  prefix match of the cookie's path attribute but doesn't end with "/".
+  Patch by Karthikeyan Singaravelan.
+
+Documentation
+-------------
+
+- bpo-35605: Fix documentation build for sphinx<1.6.  Patch by Anthony
+  Sottile.
+
+- bpo-35564: Explicitly set master_doc variable in conf.py for compliance
+  with Sphinx 2.0
+
+Tests
+-----
+
+- bpo-36816: Update Lib/test/selfsigned_pythontestdotnet.pem to match
+  self-signed.pythontest.net's new TLS certificate.
+
+- bpo-35925: Skip specific nntplib and ssl networking tests when they would
+  otherwise fail due to a modern OS or distro with a default OpenSSL policy
+  of rejecting connections to servers with weak certificates or disabling
+  TLS below TLSv1.2.
+
+- bpo-27313: Avoid test_ttk_guionly ComboboxTest failure with macOS Cocoa
+  Tk.
+
+- bpo-32947: test_ssl fixes for TLS 1.3 and OpenSSL 1.1.1.
+
+macOS
+-----
+
+- bpo-34602: Avoid failures setting macOS stack resource limit with
+  resource.setrlimit. This reverts an earlier fix for bpo-18075 which forced
+  a non-default stack size when building the interpreter executable on
+  macOS.
+
+
 What's New in Python 3.6.8 final?
 =================================
 
@@ -312,7 +415,10 @@ macOS
 - bpo-15663: The macOS 10.6+ installer now provides a private copy of Tcl/Tk
   8.6, like the 10.9+ installer does.
 
-- bpo-35402: Update macOS installer to use Tcl/Tk 8.6.9.1.
+- bpo-35402: Update macOS installer to use Tcl/Tk 8.6.9.1.  [NOTE: This
+  change was reverted for the released python.org 3.6.8 macOS installers due
+  to regressions found in Tk 8.6.9.1.  For now, the installers provide
+  Tcl/Tk 8.6.8.]
 
 - bpo-35401: Update macOS installer to use OpenSSL 1.0.2q.
 
@@ -818,11 +924,11 @@ IDLE
 Tools/Demos
 -----------
 
-- bpo-32962: python-gdb now catchs ``UnicodeDecodeError`` exceptions when
+- bpo-32962: python-gdb now catches ``UnicodeDecodeError`` exceptions when
   calling ``string()``.
 
-- bpo-32962: python-gdb now catchs ValueError on read_var(): when Python has
-  no debug symbols for example.
+- bpo-32962: python-gdb now catches ValueError on read_var(): when Python
+  has no debug symbols for example.
 
 C API
 -----
