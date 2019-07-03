@@ -27,4 +27,4 @@ mangle-fstack-protector.diff
 reproducible-buildinfo.diff
 pydoc-use-pager.diff
 disable-dbm-ndbm-tests.patch
-0030-Work-with-older-sphinx.patch
+0031-older-sphinx.patch
