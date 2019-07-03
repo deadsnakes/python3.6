@@ -3,24 +3,16 @@ Date: Wed, 27 Jun 2018 21:25:05 -0700
 Subject: Work with older sphinx
 
 ---
- Doc/tools/extensions/pyspecific.py | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ Doc/tools/extensions/pyspecific.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/Doc/tools/extensions/pyspecific.py b/Doc/tools/extensions/pyspecific.py
-index dec7f0c..7d5435f 100644
+index 70bdd17..e7b8a94 100644
 --- a/Doc/tools/extensions/pyspecific.py
 +++ b/Doc/tools/extensions/pyspecific.py
-@@ -23,7 +23,6 @@ from docutils import nodes, utils
- from sphinx import addnodes
- from sphinx.builders import Builder
- from sphinx.locale import translators
--from sphinx.util import status_iterator
- from sphinx.util.nodes import split_explicit_title
- from sphinx.writers.html import HTMLTranslator
- from sphinx.writers.text import TextWriter, TextTranslator
-@@ -315,7 +314,7 @@ class PydocTopicsBuilder(Builder):
+@@ -319,7 +319,7 @@ class PydocTopicsBuilder(Builder):
+             status_iterator = self.status_iterator
  
-     def write(self, *ignored):
          writer = TextWriter(self)
 -        for label in status_iterator(pydoc_topic_labels,
 +        for label in self.status_iterator(pydoc_topic_labels,
