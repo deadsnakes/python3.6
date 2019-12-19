@@ -2,6 +2,69 @@
 Python News
 +++++++++++
 
+What's New in Python 3.6.10 final?
+==================================
+
+*Release date: 2019-12-18*
+
+macOS
+-----
+
+- bpo-38295: Prevent failure of test_relative_path in test_py_compile on
+  macOS Catalina.
+
+
+What's New in Python 3.6.10 release candidate 1?
+================================================
+
+*Release date: 2019-12-11*
+
+Security
+--------
+
+- bpo-38945: Newline characters have been escaped when performing uu
+  encoding to prevent them from overflowing into to content section of the
+  encoded file. This prevents malicious or accidental modification of data
+  during the decoding process.
+
+- bpo-37228: Due to significant security concerns, the *reuse_address*
+  parameter of :meth:`asyncio.loop.create_datagram_endpoint` is no longer
+  supported. This is because of the behavior of ``SO_REUSEADDR`` in UDP. For
+  more details, see the documentation for
+  ``loop.create_datagram_endpoint()``. (Contributed by Kyle Stanley, Antoine
+  Pitrou, and Yury Selivanov in :issue:`37228`.)
+
+- bpo-38804: Fixes a ReDoS vulnerability in :mod:`http.cookiejar`. Patch by
+  Ben Caller.
+
+- bpo-38243: Escape the server title of
+  :class:`xmlrpc.server.DocXMLRPCServer` when rendering the document page as
+  HTML. (Contributed by Dong-hee Na in :issue:`38243`.)
+
+- bpo-38174: Update vendorized expat library version to 2.2.8, which
+  resolves CVE-2019-15903.
+
+- bpo-37461: Fix an infinite loop when parsing specially crafted email
+  headers. Patch by Abhilash Raj.
+
+- bpo-34155: Fix parsing of invalid email addresses with more than one ``@``
+  (e.g. a@b@c.com.) to not return the part before 2nd ``@`` as valid email
+  address. Patch by maxking & jpic.
+
+Library
+-------
+
+- bpo-38216: Allow the rare code that wants to send invalid http requests
+  from the `http.client` library a way to do so.  The fixes for bpo-30458
+  led to breakage for some projects that were relying on this ability to
+  test their own behavior in the face of bad requests.
+
+- bpo-36564: Fix infinite loop in email header folding logic that would be
+  triggered when an email policy's max_line_length is not long enough to
+  include the required markup and any values in the message. Patch by Paul
+  Ganssle
+
+
 What's New in Python 3.6.9 final?
 =================================
 
