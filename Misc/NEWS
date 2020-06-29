@@ -2,6 +2,57 @@
 Python News
 +++++++++++
 
+What's New in Python 3.6.11 final?
+==================================
+
+*Release date: 2020-06-27*
+
+There were no new changes in version 3.6.11.
+
+
+
+What's New in Python 3.6.11 release candidate 1?
+================================================
+
+*Release date: 2020-06-17*
+
+Security
+--------
+
+- bpo-39073: Disallow CR or LF in email.headerregistry.Address arguments to
+  guard against header injection attacks.
+
+- bpo-38576: Disallow control characters in hostnames in http.client,
+  addressing CVE-2019-18348. Such potentially malicious header injection
+  URLs now cause a InvalidURL to be raised.
+
+- bpo-39503: CVE-2020-8492: The
+  :class:`~urllib.request.AbstractBasicAuthHandler` class of the
+  :mod:`urllib.request` module uses an inefficient regular expression which
+  can be exploited by an attacker to cause a denial of service. Fix the
+  regex to prevent the catastrophic backtracking. Vulnerability reported by
+  Ben Caller and Matt Schwager.
+
+- bpo-39401: Avoid unsafe load of ``api-ms-win-core-path-l1-1-0.dll`` at
+  startup on Windows 7.
+
+Core and Builtins
+-----------------
+
+- bpo-39510: Fix segfault in ``readinto()`` method on closed BufferedReader.
+
+- bpo-39421: Fix possible crashes when operating with the functions in the
+  :mod:`heapq` module and custom comparison operators.
+
+Library
+-------
+
+- bpo-39503: :class:`~urllib.request.AbstractBasicAuthHandler` of
+  :mod:`urllib.request` now parses all WWW-Authenticate HTTP headers and
+  accepts multiple challenges per header: use the realm of the first Basic
+  challenge.
+
+
 What's New in Python 3.6.10 final?
 ==================================
 
