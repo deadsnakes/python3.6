@@ -2,6 +2,36 @@
 Python News
 +++++++++++
 
+What's New in Python 3.6.12 final?
+==================================
+
+*Release date: 2020-08-15*
+
+Security
+--------
+
+- bpo-29778: Ensure :file:`python3.dll` is loaded from correct locations
+  when Python is embedded (CVE-2020-15523).
+
+- bpo-41004: CVE-2020-14422: The __hash__() methods of
+  ipaddress.IPv4Interface and ipaddress.IPv6Interface incorrectly generated
+  constant hash values of 32 and 128 respectively. This resulted in always
+  causing hash collisions. The fix uses hash() to generate hash values for
+  the tuple of (address, mask length, network address).
+
+- bpo-39603: Prevent http header injection by rejecting control characters
+  in http.client.putrequest(...).
+
+Library
+-------
+
+- bpo-41288: Unpickling invalid NEWOBJ_EX opcode with the C implementation
+  raises now UnpicklingError instead of crashing.
+
+- bpo-39017: Avoid infinite loop when reading specially crafted TAR files
+  using the tarfile module (CVE-2019-20907).
+
+
 What's New in Python 3.6.11 final?
 ==================================
 
