@@ -53,6 +53,7 @@ Multi-Arch: same
 Priority: optional
 Pre-Depends: ${misc:Pre-Depends}
 Depends: libpython3.6-minimal (= ${binary:Version}), mime-support, ${shlibs:Depends}, ${misc:Depends}
+Recommends: ca-certificates
 Breaks: libmpdec2 (<< 2.4.2)
 Description: Interactive high-level object-oriented language (standard library, version 3.6)
  Python is a high-level, interactive, object-oriented language. Its 3.6 version
