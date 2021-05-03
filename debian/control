@@ -258,3 +258,29 @@ Description: GNU dbm database support for Python (version 3.6 debug extension)
  create or read GNU dbm database files with Python.
  .
  This package contains the extensions built for the Python debug interpreter.
+
+Package: python3.6-full
+Architecture: any
+Multi-Arch: allowed
+Depends: python3.6 (= ${binary:Version}),
+  libpython3.6-testsuite,
+  python3.6-venv (= ${binary:Version}),
+  idle-python3.6,
+  python3.6-gdbm,
+  python3.6-tk,
+  ca-certificates,
+  ${shlibs:Depends}, ${misc:Depends}
+Recommends: python3.6-doc, python3.6-examples,
+Suggests: python3.6-dev
+Description: Python Interpreter with complete class library (version 3.6)
+ Python, the high-level, interactive object oriented language,
+ includes an extensive class library with lots of goodies for
+ network programming, system administration, sounds and graphics.
+ .
+ This package is a dependency package, which depends on the full
+ standard library of Python for Python developers. Including modules
+ used only at build-time, such as venv and distutils, and modules with
+ complex dependencies, such as tk and IDLE. All batteries included.
+ .
+ According to the Debian Python policy, this package must not be used in
+ build dependencies, dependencies and recommendations.
