@@ -27,7 +27,7 @@ Architecture: any
 Multi-Arch: allowed
 Priority: optional
 Depends: python3.6-minimal (= ${binary:Version}), libpython3.6-stdlib (= ${binary:Version}), mime-support, ${shlibs:Depends}, ${misc:Depends}
-Suggests: python3.6-venv, python3.6-doc, binutils
+Suggests: python3.6-venv, binutils
 Description: Interactive high-level object-oriented language (version 3.6)
  Python is a high-level, interactive, object-oriented language. Its 3.6 version
  includes an extensive class library with lots of goodies for
@@ -161,27 +161,6 @@ Description: IDE for Python (v3.6) using Tkinter
  IDLE is an Integrated Development Environment for Python (v3.6).
  IDLE is written using Tkinter and therefore quite platform-independent.
 
-Package: python3.6-doc
-Section: doc
-Architecture: all
-Depends: libjs-jquery, libjs-underscore, ${misc:Depends}
-Suggests: python3.6
-Description: Documentation for the high-level object-oriented language Python (v3.6)
- These is the official set of documentation for the interactive high-level
- object-oriented language Python (v3.6). All documents are provided
- in HTML format. The package consists of ten documents:
- .
-   * What's New in Python3.6
-   * Tutorial
-   * Python Library Reference
-   * Macintosh Module Reference
-   * Python Language Reference
-   * Extending and Embedding Python
-   * Python/C API Reference
-   * Installing Python Modules
-   * Documenting Python
-   * Distributing Python Modules
-
 Package: python3.6-dbg
 Section: debug
 Architecture: any
@@ -270,7 +249,7 @@ Depends: python3.6 (= ${binary:Version}),
   python3.6-tk,
   ca-certificates,
   ${shlibs:Depends}, ${misc:Depends}
-Recommends: python3.6-doc, python3.6-examples,
+Recommends: python3.6-examples,
 Suggests: python3.6-dev
 Description: Python Interpreter with complete class library (version 3.6)
  Python, the high-level, interactive object oriented language,
