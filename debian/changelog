@@ -1,3 +1,9 @@
+python3.6 (3.6.15-1+focal2) focal; urgency=medium
+
+  * Remove docs and symbols builds.
+
+ -- Anthony Sottile <asottile@umich.edu>  Sat, 15 Jan 2022 14:47:13 -0500
+
 python3.6 (3.6.15-1+focal1) focal; urgency=medium
 
   * Python 3.6.15 release.
