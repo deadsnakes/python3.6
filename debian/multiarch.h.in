@@ -7,6 +7,8 @@
 #  include <i386-linux-gnu/@subdir@/@header@>
 # elif defined(__aarch64__) && defined(__AARCH64EL__)
 #  include <aarch64-linux-gnu/@subdir@/@header@>
+# elif defined(__arc__)
+#  include <arc-linux-gnu/@subdir@/@header@>
 # elif defined(__alpha__)
 #  include <alpha-linux-gnu/@subdir@/@header@>
 # elif defined(__ARM_EABI__) && defined(__ARM_PCS_VFP)
@@ -19,6 +21,26 @@
 #  include <ia64-linux-gnu/@subdir@/@header@>
 # elif defined(__m68k__) && !defined(__mcoldfire__)
 #  include <m68k-linux-gnu/@subdir@/@header@>
+# elif defined(__mips_hard_float) && defined(__mips_isa_rev) && (__mips_isa_rev >=6) && defined(_MIPSEL)
+#  if _MIPS_SIM == _ABIO32
+#   include <mipsisa32r6el-linux-gnu/@subdir@/@header@>
+#  elif _MIPS_SIM == _ABIN32
+#   include <mipsisa64r6el-linux-gnuabin32/@subdir@/@header@>
+#  elif _MIPS_SIM == _ABI64
+#   include <mipsisa64r6el-linux-gnuabi64/@subdir@/@header@>
+#  else
+#   error unknown multiarch location for @header@
+#  endif
+# elif defined(__mips_hard_float) && defined(__mips_isa_rev) && (__mips_isa_rev >=6)
+#  if _MIPS_SIM == _ABIO32
+#   include <mipsisa32r6-linux-gnu/@subdir@/@header@>
+#  elif _MIPS_SIM == _ABIN32
+#   include <mipsisa64r6-linux-gnuabin32/@subdir@/@header@>
+#  elif _MIPS_SIM == _ABI64
+#   include <mipsisa64r6-linux-gnuabi64/@subdir@/@header@>
+#  else
+#   error unknown multiarch location for @header@
+#  endif
 # elif defined(__mips_hard_float) && defined(_MIPSEL)
 #  if _MIPS_SIM == _ABIO32
 #   include <mipsel-linux-gnu/@subdir@/@header@>
@@ -61,6 +83,12 @@
 #  include <sparc64-linux-gnu/@subdir@/@header@>
 # elif defined(__sparc__)
 #  include <sparc-linux-gnu/@subdir@/@header@>
+# elif defined(__riscv)
+#  if __riscv_xlen == 64
+#    include <riscv64-linux-gnu/@subdir@/@header@>
+#  else
+#    include <riscv32-linux-gnu/@subdir@/@header@>
+#  endif
 # else
 #   error unknown multiarch location for @header@
 # endif

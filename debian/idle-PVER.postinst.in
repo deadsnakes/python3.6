@@ -12,10 +12,10 @@ case "$1" in
     configure|abort-upgrade|abort-remove|abort-deconfigure)
 
         for i in $DIRLIST ; do
-	    @PVER@ /usr/lib/@PVER@/compileall.py -q $i
+	    /usr/bin/@PVER@ /usr/lib/@PVER@/compileall.py -q $i
 	    if grep -sq '^byte-compile[^#]*optimize' /etc/python/debian_config
 	    then
-		@PVER@ -O /usr/lib/@PVER@/compileall.py -q $i
+		/usr/bin/@PVER@ -O /usr/lib/@PVER@/compileall.py -q $i
 	    fi
 	done
     ;;

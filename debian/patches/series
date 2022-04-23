@@ -10,12 +10,10 @@ link-opt.diff
 setup-modules.diff
 platform-lsbrelease.diff
 bdist-wininst-notfound.diff
-enable-fpectl.diff
 langpack-gettext.diff
 disable-sem-check.diff
 lib-argparse.diff
 ctypes-arm.diff
-lto-link-flags.diff
 multiarch.diff
 lib2to3-no-pickled-grammar.diff
 ext-no-libpython-link.diff
@@ -27,3 +25,6 @@ mangle-fstack-protector.diff
 reproducible-buildinfo.diff
 pydoc-use-pager.diff
 disable-dbm-ndbm-tests.patch
+0033-sysconfigdata-name.patch
+build-math-object.diff
+0029-destshared-location.patch
